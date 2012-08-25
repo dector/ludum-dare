@@ -8,6 +8,8 @@ import ua.org.dector.ludumdare.ld24.Level;
 import ua.org.dector.ludumdare.ld24.Player;
 import ua.org.dector.ludumdare.ld24.Renderer;
 
+import static com.badlogic.gdx.Input.*;
+
 /**
  * @author dector
  */
@@ -18,7 +20,7 @@ public class GameScreen implements Screen, InputProcessor {
     Renderer renderer;
     
     public void render(float v) {
-        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) Gdx.app.exit();
+        if (Gdx.input.isKeyPressed(Keys.ESCAPE)) Gdx.app.exit();
         
         renderer.render(v);
     }
@@ -50,13 +52,16 @@ public class GameScreen implements Screen, InputProcessor {
 
     public boolean keyDown(int keycode) {
         switch (keycode) {
-            case Input.Keys.LEFT: {
+            case Keys.LEFT: {
                 level.player.direction = Direction.LEFT;
                 level.player.ax -= Player.ACCELERATION;
             } break;
-            case Input.Keys.RIGHT: {
+            case Keys.RIGHT: {
                 level.player.direction = Direction.RIGHT;
                 level.player.ax += Player.ACCELERATION;
+            } break;
+            case Keys.UP: {
+                level.player.tryToJump();
             } break;
         }
         
@@ -65,10 +70,10 @@ public class GameScreen implements Screen, InputProcessor {
 
     public boolean keyUp(int keycode) {
         switch (keycode) {
-            case Input.Keys.LEFT: {
+            case Keys.LEFT: {
                 level.player.ax = 0;
             } break;
-            case Input.Keys.RIGHT: {
+            case Keys.RIGHT: {
                 level.player.ax = 0;
             } break;
         }

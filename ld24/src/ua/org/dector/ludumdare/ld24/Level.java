@@ -69,7 +69,7 @@ public class Level {
             }
         }
 
-        if (collided) player.vx = 0;
+        if (collided) { player.vx = 0; /*player.ax = 0;*/ }
         collided = false;
 
         player.y += player.vy;
@@ -87,7 +87,13 @@ public class Level {
             }
         }
 
-        if (collided) player.vy = 0;
+        if (collided) {
+            if (player.isJumping && player.vy < 0)
+                player.isJumping = false;
+
+            player.vy = 0;
+            player.ay = 0;
+        }
     }
 
     private Rectangle[] checkCollisions() {

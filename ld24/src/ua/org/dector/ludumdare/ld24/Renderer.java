@@ -109,15 +109,25 @@ public class Renderer {
             sb.draw(playerTex[PLAYER_LEFT], level.player.x, level.player.y);
         
         if (Debug.DEBUG) {
+//            String debugInfo = String.format(
+//                    "Player: %.0f:%.0f\nLeft: %s\nRight: %s\nTop: %s\nBottom: %s",
+//                    level.player.x,
+//                    level.player.y,
+//                    Debug.tileLeft,
+//                    Debug.tileRight,
+//                    Debug.tileTop,
+//                    Debug.tileBottom
+//
+//            );
+
             String debugInfo = String.format(
-                    "Player: %.0f:%.0f\nLeft: %s\nRight: %s\nTop: %s\nBottom: %s",
+                    "Player: %.0f:%.0f\nVx: %.2f\nVy: %.2f\nAx: %.2f\nAy: %.2f",
                     level.player.x,
                     level.player.y,
-                    Debug.tileLeft,
-                    Debug.tileRight,
-                    Debug.tileTop,
-                    Debug.tileBottom
-
+                    level.player.vx,
+                    level.player.vy,
+                    level.player.ax,
+                    level.player.ay
             );
             font.drawMultiLine(sb, debugInfo, 10, App.SCREEN_HEIGHT - 10);
         }

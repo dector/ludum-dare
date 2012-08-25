@@ -4,12 +4,13 @@ package ua.org.dector.ludumdare.ld24;
  * @author dector
  */
 public class Player {
-    public static final float ACCELERATION = 1.8f;
-    public static final float JUMPING = 2.5f;
+    public static final float ACCELERATION = 3.5f;
+    public static final float JUMPING = 3.5f;
     public static final float GRAVITY = 0.8f;
     public static final float FRICTION = 0.8f;
-    public static final float MAX_SPEED_X = 5f;
-    public static final float MAX_SPEED_Y = 5f;
+    public static final float AIR_FRICTION = 1 - 0.1f;
+    public static final float MAX_SPEED_X = 4f;
+    public static final float MAX_SPEED_Y = 4f;
 
     Direction direction = Direction.RIGHT;
     int gravityDirection = -1;
@@ -30,7 +31,11 @@ public class Player {
     }
 
     public void update(float dt) {
-        vx += ax * dt;
+        if (ax != 0 && (vx > 0 && ax < 0 || vx < 0 && ax > 0))
+            vx = ax * dt;
+        else
+            vx += ax * dt;
+
         ay += gravityDirection * GRAVITY * dt;
         vy += ay;
 
@@ -39,7 +44,14 @@ public class Player {
         if (vy > MAX_SPEED_Y) vy = MAX_SPEED_Y;
         if (vy < -MAX_SPEED_Y) vy = -MAX_SPEED_Y;
 
-        if (ax == 0) vx *= FRICTION;
+        if (ax == 0) {
+            if (isJumping)
+                vx *= AIR_FRICTION;
+            else
+                vx *= FRICTION;
+        }
+
+        System.out.println(vx);
     }
 
     public void tryToJump() {

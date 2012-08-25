@@ -57,25 +57,33 @@ public class Renderer {
 
         Pixmap p = new Pixmap(levelTexWidth, levelTexHeight, Pixmap.Format.RGBA8888);
 
+        Color c = new Color();
         for (int x = 0; x < level.width; x++) {
             for (int y = level.height - 1; y >= 0; y--) {
                 Tile tile = level.map[x][level.height - y - 1];
 
-                if (tile != null)
+                if (tile != null) {
                     switch (tile) {
                         case BLOCK: {
-                            p.setColor(Color.GRAY);
-                            p.fillRectangle(BLOCK_SIZE * x, BLOCK_SIZE * y, BLOCK_SIZE, BLOCK_SIZE);
+                            c.set(Color.GRAY);
+                        } break;
+                        case WATER: {
+                            Color.rgba8888ToColor(c, Level.WATER);
                         } break;
                         case EXIT: {
-                            p.setColor(Color.BLUE);
-                            p.fillRectangle(BLOCK_SIZE * x, BLOCK_SIZE * y, BLOCK_SIZE, BLOCK_SIZE);
+                            Color.rgba8888ToColor(c, Level.EXIT);
                         } break;
                         case DEATH: {
-                            p.setColor(Color.RED);
-                            p.fillRectangle(BLOCK_SIZE * x, BLOCK_SIZE * y, BLOCK_SIZE, BLOCK_SIZE);
+                            Color.rgba8888ToColor(c, Level.DEATH);
+                        } break;
+                        case SPAWN: {
+                            Color.rgba8888ToColor(c, Level.SPAWN);
                         } break;
                     }
+                
+                    p.setColor(c);
+                    p.fillRectangle(BLOCK_SIZE * x, BLOCK_SIZE * y, BLOCK_SIZE, BLOCK_SIZE);
+                }
             }
         }
 
@@ -99,7 +107,8 @@ public class Renderer {
         TextureRegion[][] textureRegions = TextureRegion.split(graphicsTexture, SPRITE_SIZE, SPRITE_SIZE);
         playerTex = new TextureRegion[2];
         playerTex[PLAYER_RIGHT] = textureRegions[0][0];
-        playerTex[PLAYER_LEFT] = textureRegions[0][1];
+        playerTex[PLAYER_LEFT] = new TextureRegion(playerTex[PLAYER_RIGHT]);
+        playerTex[PLAYER_LEFT].flip(true, false);
         
         blockTex = textureRegions[0][2];
     }
@@ -138,13 +147,15 @@ public class Renderer {
         
         if (Debug.DEBUG) {
             String debugInfo = String.format(
-                    "Player: %.0f:%.0f\nVx: %.2f\nVy: %.2f\nAx: %.2f\nAy: %.2f",
+                    "Player: %.0f:%.0f\nVx: %.2f\nVy: %.2f\nAx: %.2f\nAy: %.2f\nState: %s\nAbilities: %s",
                     level.player.x,
                     level.player.y,
                     level.player.vx,
                     level.player.vy,
                     level.player.ax,
-                    level.player.ay
+                    level.player.ay,
+                    level.player.state,
+                    level.player.abilities
             );
             font.drawMultiLine(uiSb, debugInfo, 10, App.SCREEN_HEIGHT - 10);
         }

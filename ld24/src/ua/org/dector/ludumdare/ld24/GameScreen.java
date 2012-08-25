@@ -50,17 +50,35 @@ public class GameScreen implements Screen, InputProcessor {
         switch (keycode) {
             case Keys.LEFT: {
                 level.player.direction = Direction.LEFT;
-                level.player.ax -= Player.ACCELERATION;
+
+                if (level.player.state == State.RUNNING)
+                    level.player.ax -= Player.RUNNING;
+                else if (level.player.state == State.SWIM)
+                    level.player.ax -= Player.SWIMMING;
             } break;
             case Keys.RIGHT: {
                 level.player.direction = Direction.RIGHT;
-                level.player.ax += Player.ACCELERATION;
+
+                if (level.player.state == State.RUNNING)
+                    level.player.ax += Player.RUNNING;
+                else if (level.player.state == State.SWIM)
+                    level.player.ax += Player.SWIMMING;
             } break;
             case Keys.UP: {
-                level.player.jump();
+                if (level.player.state == State.RUNNING)
+                    level.player.jump();
+                else if (level.player.state == State.SWIM)
+                    level.player.ay += Player.SWIMMING;
+            } break;
+            case Keys.DOWN: {
+                if (level.player.state == State.SWIM)
+                    level.player.ay -= Player.SWIMMING;
             } break;
             case Keys.R: {
                 level.restart();
+            } break;
+            case Keys.D: {
+                level.player.abilities.add(Ability.SWIM);
             } break;
         }
         
@@ -74,6 +92,14 @@ public class GameScreen implements Screen, InputProcessor {
             } break;
             case Keys.RIGHT: {
                 level.player.ax = 0;
+            } break;
+            case Keys.UP: {
+                if (level.player.state == State.SWIM)
+                    level.player.ay = 0;
+            } break;
+            case Keys.DOWN: {
+                if (level.player.state == State.SWIM)
+                    level.player.ay = 0;
             } break;
         }
 

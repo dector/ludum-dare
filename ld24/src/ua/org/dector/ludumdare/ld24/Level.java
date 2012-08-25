@@ -13,7 +13,8 @@ public class Level {
     public static final int NOTHING = 0;
     public static final int BLOCK   = 0x000000ff;
     public static final int SPAWN   = 0x00ff00ff;
-    public static final int EXIT    = 0x0000ffff;
+    public static final int EXIT    = 0xff00ffff;
+    public static final int WATER   = 0x0000ffff;
     public static final int DEATH   = 0xff0000ff;
 
     int width;
@@ -53,6 +54,9 @@ public class Level {
                     case DEATH: {
                         map[x][y] = Tile.DEATH;
                     } break;
+                    case WATER: {
+                        map[x][y] = Tile.WATER;
+                    } break;
                 }
             }
         }
@@ -66,8 +70,8 @@ public class Level {
 
     private void tryToMovePlayer() {
         if (player.jumpCommand) {
-            boolean onTheGround =
-                    map[(int)player.x / BLOCK_SIZE][(int)player.y / BLOCK_SIZE - 1] == Tile.BLOCK
+            boolean onTheGround = player.state != State.SWIM
+                    && map[(int)player.x / BLOCK_SIZE][(int)player.y / BLOCK_SIZE - 1] == Tile.BLOCK
                     || map[(int)player.x / BLOCK_SIZE + 1][(int)player.y / BLOCK_SIZE - 1] == Tile.BLOCK;
 
             if (! player.isJumping && onTheGround) {
@@ -135,17 +139,36 @@ public class Level {
         
         Rectangle[] r = { new Rectangle(), new Rectangle(), new Rectangle(), new Rectangle() };
 
+        boolean inWater = false;
+        
         for (int i = 0; i < tiles.length; i++) {
             if (tiles[i] != null)
                 switch (tiles[i]) {
                     case BLOCK: r[i].set(x[i], y[i], 1, 1); break;
                     case EXIT: player.win = true; break;
-                    case DEATH: restart(); break;
+                    case DEATH: die(); break;
+                    case WATER: {
+                        if (! inWater) inWater = true;
+                    } break;
                     default: r[i].set(-1, -1, 1, 1); break;
                 }
         }
         
+        if (player.state == State.SWIM) {
+            if (! inWater)
+                player.state = State.RUNNING;
+        } else if (inWater) {
+            if (! player.abilities.contains(Ability.SWIM))
+                die();
+            else
+                player.state = State.SWIM;
+        }
+        
         return r;
+    }
+
+    private void die() {
+        restart();
     }
 
     void restart() {

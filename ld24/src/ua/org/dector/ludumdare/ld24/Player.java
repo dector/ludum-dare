@@ -18,7 +18,6 @@ public class Player {
     boolean isJumping;
     boolean jumpCommand;
     boolean win;
-    boolean dead;
 
     float x;
     float y;
@@ -57,6 +56,17 @@ public class Player {
 
     public void jump() {
         jumpCommand = true;
+    }
+
+    public void restart(int spawnX, int spawnY) {
+        x = spawnX;
+        y = spawnY;
+
+        win = false;
+        vx = vy = ax = ay = 0;
+        gravityDirection = -1;
+        isJumping = jumpCommand = false;
+        direction = Direction.RIGHT;
     }
 }
 

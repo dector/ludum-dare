@@ -105,7 +105,7 @@ public class Renderer {
     }
 
     public void render(float dt) {
-        if (! level.player.win && ! level.player.dead)
+        if (! level.player.win)
             level.update(dt);
         
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
@@ -127,6 +127,15 @@ public class Renderer {
         sb.end();
 
         uiSb.begin();
+        if (level.player.win) {
+            String wonStr = "You won!";
+            BitmapFont.TextBounds bounds = font.getBounds(wonStr);
+            font.draw(uiSb, wonStr,
+                    (App.SCREEN_WIDTH - bounds.width) / 2,
+                    (App.SCREEN_HEIGHT - bounds.height) / 2
+            );
+        }
+        
         if (Debug.DEBUG) {
             String debugInfo = String.format(
                     "Player: %.0f:%.0f\nVx: %.2f\nVy: %.2f\nAx: %.2f\nAy: %.2f",

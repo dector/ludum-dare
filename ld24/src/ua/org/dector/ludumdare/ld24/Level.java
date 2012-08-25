@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Rectangle;
 
+import static ua.org.dector.ludumdare.ld24.Renderer.BLOCK_SIZE;
+
 /**
  * @author dector
  */
@@ -17,6 +19,9 @@ public class Level {
     int width;
     int height;
     Tile[][] map;
+    
+    int spawnX;
+    int spawnY;
     
     Player player;
 
@@ -37,8 +42,10 @@ public class Level {
                     case BLOCK:
                         map[x][y] = Tile.BLOCK; break;
                     case SPAWN: {
-                        player = new Player(Renderer.BLOCK_SIZE * x, Renderer.BLOCK_SIZE * y);
+                        player = new Player(BLOCK_SIZE * x, BLOCK_SIZE * y);
                         map[x][y] = Tile.SPAWN;
+                        spawnX = x * BLOCK_SIZE;
+                        spawnY = y * BLOCK_SIZE;
                     } break;
                     case EXIT: {
                         map[x][y] = Tile.EXIT;
@@ -60,8 +67,8 @@ public class Level {
     private void tryToMovePlayer() {
         if (player.jumpCommand) {
             boolean onTheGround =
-                    map[(int)player.x / Renderer.BLOCK_SIZE][(int)player.y / Renderer.BLOCK_SIZE - 1] == Tile.BLOCK
-                    || map[(int)player.x / Renderer.BLOCK_SIZE + 1][(int)player.y / Renderer.BLOCK_SIZE - 1] == Tile.BLOCK;
+                    map[(int)player.x / BLOCK_SIZE][(int)player.y / BLOCK_SIZE - 1] == Tile.BLOCK
+                    || map[(int)player.x / BLOCK_SIZE + 1][(int)player.y / BLOCK_SIZE - 1] == Tile.BLOCK;
 
             if (! player.isJumping && onTheGround) {
                 player.vy += player.JUMPING;
@@ -71,20 +78,20 @@ public class Level {
             player.jumpCommand = false;
         }
 
-        Rectangle pr = new Rectangle((int)player.x / Renderer.BLOCK_SIZE, (int)Math.floor(player.y / Renderer.BLOCK_SIZE), 1, 1);
+        Rectangle pr = new Rectangle((int)player.x / BLOCK_SIZE, (int)Math.floor(player.y / BLOCK_SIZE), 1, 1);
         Rectangle[] rs;
 
         boolean collided = false;
 
         player.x += player.vx;
-        pr.setX((int)player.x / Renderer.BLOCK_SIZE);
+        pr.setX((int)player.x / BLOCK_SIZE);
         rs = checkCollisions();
         for (int i = 0; i < rs.length; i++) {
             if (pr.overlaps(rs[i])) {
                 if (player.vx < 0)
-                    player.x = (rs[i].x + 1) * Renderer.BLOCK_SIZE + 0.01f;
+                    player.x = (rs[i].x + 1) * BLOCK_SIZE + 0.01f;
                 else
-                    player.x = (rs[i].x - 1) * Renderer.BLOCK_SIZE - 0.01f;
+                    player.x = (rs[i].x - 1) * BLOCK_SIZE - 0.01f;
 
                 collided = true;
             }
@@ -94,15 +101,15 @@ public class Level {
         collided = false;
 
         player.y += player.vy;
-        pr.setX((int)player.x / Renderer.BLOCK_SIZE);
-        pr.setY((int)Math.floor(player.y / Renderer.BLOCK_SIZE));
+        pr.setX((int)player.x / BLOCK_SIZE);
+        pr.setY((int)Math.floor(player.y / BLOCK_SIZE));
         rs = checkCollisions();
         for (int i = 0; i < rs.length; i++) {
             if (pr.overlaps(rs[i])) {
                 if (player.vy < 0)
-                    player.y = (rs[i].y + 1) * Renderer.BLOCK_SIZE + 0.01f;
+                    player.y = (rs[i].y + 1) * BLOCK_SIZE + 0.01f;
                 else
-                    player.y = (rs[i].y - 1) * Renderer.BLOCK_SIZE - 0.01f;
+                    player.y = (rs[i].y - 1) * BLOCK_SIZE - 0.01f;
 
                 collided = true;
             }
@@ -118,8 +125,8 @@ public class Level {
     }
 
     private Rectangle[] checkCollisions() {
-        int px = (int)player.x / Renderer.BLOCK_SIZE;
-        int py = (int)Math.floor(player.y / Renderer.BLOCK_SIZE);
+        int px = (int)player.x / BLOCK_SIZE;
+        int py = (int)Math.floor(player.y / BLOCK_SIZE);
 
         int[] x = { px, px + 1, px + 1, px };
         int[] y = { py, py, py + 1, py + 1 };
@@ -132,13 +139,19 @@ public class Level {
             if (tiles[i] != null)
                 switch (tiles[i]) {
                     case BLOCK: r[i].set(x[i], y[i], 1, 1); break;
-                    case EXIT: if (i == 0) player.win = true; break;
-                    case DEATH: if (i == 0) player.dead = true; break;
+                    case EXIT: player.win = true; break;
+                    case DEATH: restart(); break;
                     default: r[i].set(-1, -1, 1, 1); break;
                 }
         }
         
         return r;
     }
+
+    void restart() {
+        player.restart(spawnX, spawnY);
+    }
+
+
 }
 

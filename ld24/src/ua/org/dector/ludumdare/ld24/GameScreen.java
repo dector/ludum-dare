@@ -59,6 +59,9 @@ public class GameScreen implements Screen, InputProcessor {
             case Keys.UP: {
                 level.player.jump();
             } break;
+            case Keys.R: {
+                level.restart();
+            } break;
         }
         
         return true;

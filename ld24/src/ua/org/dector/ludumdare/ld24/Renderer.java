@@ -26,6 +26,11 @@ public class Renderer {
 
     static final int PLAYER_RIGHT = 0;
     static final int PLAYER_LEFT = 1;
+    
+    public static final int TUBE_UP = 0;
+    public static final int TUBE_RIGHT = 1;
+    public static final int TUBE_DOWN = 2;
+    public static final int TUBE_LEFT = 3;
 
     public static final String GRAPHICS_FILE = "ld24/data/graphics.png";
     
@@ -38,6 +43,7 @@ public class Renderer {
 
     TextureRegion[] playerTex;
     TextureRegion[] abilTex;
+    TextureRegion[] tube;
     TextureRegion blockTex;
     TextureRegion waterTex;
     TextureRegion deathTex;
@@ -136,6 +142,12 @@ public class Renderer {
         abilTex[AB_SLICK]   = textureRegions[1][1];
         abilTex[AB_SWIM]    = textureRegions[1][2];
         abilTex[AB_NORMAL]  = textureRegions[1][3];
+
+        tube = new TextureRegion[4];
+        tube[TUBE_UP]   = textureRegions[3][0];
+        tube[TUBE_RIGHT] = textureRegions[3][1];
+        tube[TUBE_DOWN] = textureRegions[3][2];
+        tube[TUBE_LEFT] = textureRegions[3][3];
     }
 
     public void render(float dt) {
@@ -223,6 +235,15 @@ public class Renderer {
                             t = abilTex[AB_NORMAL]; break;
                         case AB_SOLID:
                             t = abilTex[AB_SOLID]; break;
+
+                        case TUBE_UP:
+                            t = tube[TUBE_UP]; break;
+                        case TUBE_RIGHT:
+                            t = tube[TUBE_RIGHT]; break;
+                        case TUBE_DOWN:
+                            t = tube[TUBE_DOWN]; break;
+                        case TUBE_LEFT:
+                            t = tube[TUBE_LEFT]; break;
                         
                         default: t = null; break;
                     }

@@ -99,6 +99,10 @@ public class Player {
         gravityAffection = true;
         abilities.remove(Ability.SLICK);
     }
+
+    public void stop() {
+        vx = vy = ax = ay = 0;
+    }
 }
 
 enum Direction {

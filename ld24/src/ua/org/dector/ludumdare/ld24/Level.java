@@ -4,6 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Rectangle;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import static ua.org.dector.ludumdare.ld24.Renderer.BLOCK_SIZE;
 
 /**
@@ -36,11 +41,16 @@ public class Level {
     int spawnY;
     
     Player player;
+    Map<Point, Point> tubes;
     
     String filename;
 
     public void load(String file) {
         this.filename = file;
+        
+        tubes = new HashMap<Point, Point>();
+
+        Map<Integer, Point> unpairedTubes = new HashMap<Integer, Point>();
         
         Pixmap p = new Pixmap(Gdx.files.internal(file));
         
@@ -48,13 +58,14 @@ public class Level {
         height = p.getHeight();
         map = new Tile[width][height];
 
-        int t;
+        int pix;
+        int tmp;
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                t = p.getPixel(x, height - y - 1);
+                pix = p.getPixel(x, height - y - 1);
 //                System.out.printf("%d:%d %s%n", x, y, Integer.toHexString(t));
                 
-                switch (t) {
+                switch (pix) {
                     case BLOCK:
                         map[x][y] = Tile.BLOCK; break;
                     case SPAWN: {
@@ -81,6 +92,36 @@ public class Level {
                     case AB_SLICK:map[x][y] = Tile.AB_SLICK; break;
                     case AB_NORMAL:map[x][y] = Tile.AB_NORMAL; break;
                     case AB_SOLID:map[x][y] = Tile.AB_SOLID; break;
+
+                    default: {  //  Test for tube
+                        tmp = (pix & 0xff000000) >>> 24;
+
+                        if (tmp == 0xCC) {
+                            int tubeId = (pix & 0x0000ff00) >>> 8;
+                            Point tubePoint = new Point(x, y);
+
+                            int tubeDir = (pix & 0x00ff0000) >>> 16;
+
+                            Tile tile = null;
+                            switch (tubeDir) {
+                                case 0: tile = Tile.TUBE_UP; break;
+                                case 0x66: tile = Tile.TUBE_RIGHT; break;
+                                case 0x99: tile = Tile.TUBE_DOWN; break;
+                                case 0xff: tile = Tile.TUBE_LEFT; break;
+                            }
+
+                            map[x][y] = tile;
+
+                            if (unpairedTubes.containsKey(tubeId)) {
+                                Point otherPoint = unpairedTubes.remove(tubeId);
+
+                                tubes.put(tubePoint, otherPoint);
+                                tubes.put(otherPoint, tubePoint);
+                            } else {
+                                unpairedTubes.put(tubeId, tubePoint);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -96,9 +137,14 @@ public class Level {
         if (player.jumpCommand) {
             int nextBlock = (player.gravityDirection < 0) ? -1 : 2;
 
+            Tile tile1 = map[(int)player.x / BLOCK_SIZE][(int)player.y / BLOCK_SIZE + nextBlock];
+            Tile tile2 = map[(int)player.x / BLOCK_SIZE + 1][(int)player.y / BLOCK_SIZE + nextBlock];
+
             boolean onTheGround = player.state != State.SWIM
-                    && (map[(int)player.x / BLOCK_SIZE][(int)player.y / BLOCK_SIZE + nextBlock] == Tile.BLOCK
-                    || map[(int)player.x / BLOCK_SIZE + 1][(int)player.y / BLOCK_SIZE + nextBlock] == Tile.BLOCK);
+                    && (tile1 == Tile.BLOCK || tile1 == Tile.GLASS || tile1 == Tile.TUBE_UP || tile1 == Tile.TUBE_RIGHT
+                    || tile1 == Tile.TUBE_DOWN || tile1 == Tile.TUBE_LEFT
+                    || tile2 == Tile.BLOCK || tile2 == Tile.GLASS || tile2 == Tile.TUBE_UP || tile2 == Tile.TUBE_RIGHT
+                    || tile2 == Tile.TUBE_DOWN || tile2 == Tile.TUBE_LEFT);
 
             if (! player.isJumping && onTheGround) {
                 player.vy -= player.gravityDirection * Player.JUMPING;
@@ -192,10 +238,44 @@ public class Level {
                         if (! inWater) inWater = true;
                     } break;
                     case GLASS: {
+                        if (! player.abilities.contains(Ability.SOLID))
+                            r[i].set(x[i], y[i], 1, 1);
+
                         if (Math.abs(player.vy) == Player.MAX_SPEED_Y && player.abilities.contains(Ability.SOLID)) {
                             map[x[i]][y[i]] = null;
                             broke = true;
                         }
+                    } break;
+                    case TUBE_UP:
+                    case TUBE_RIGHT:
+                    case TUBE_DOWN:
+                    case TUBE_LEFT: {
+                        r[i].set(x[i], y[i], 1, 1);
+
+                        Point otherTube = tubes.get(new Point(x[i], y[i]));
+                        if (otherTube != null)
+                            switch (map[otherTube.x][otherTube.y]) {
+                                case TUBE_UP: {
+                                    player.stop();
+                                    player.x = otherTube.x * BLOCK_SIZE;
+                                    player.y = otherTube.y * BLOCK_SIZE + BLOCK_SIZE;
+                                } break;
+                                case TUBE_RIGHT: {
+                                    player.stop();
+                                    player.x = otherTube.x * BLOCK_SIZE + BLOCK_SIZE;
+                                    player.y = otherTube.y * BLOCK_SIZE;
+                                } break;
+                                case TUBE_DOWN: {
+                                    player.stop();
+                                    player.x = otherTube.x * BLOCK_SIZE;
+                                    player.y = otherTube.y * BLOCK_SIZE - BLOCK_SIZE;
+                                } break;
+                                case TUBE_LEFT: {
+                                    player.stop();
+                                    player.x = otherTube.x * BLOCK_SIZE - BLOCK_SIZE;
+                                    player.y = otherTube.y * BLOCK_SIZE;
+                                } break;
+                            }
                     } break;
                     case AB_SWIM: {
                         player.abilities.add(Ability.SWIM);
@@ -222,6 +302,7 @@ public class Level {
                         removeTile(x[i], y[i]);
                     } break;
                     default: r[i].set(-1, -1, 1, 1); break;
+
                 }
         }
 

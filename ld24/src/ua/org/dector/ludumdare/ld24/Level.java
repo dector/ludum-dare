@@ -105,9 +105,9 @@ public class Level {
                             Tile tile = null;
                             switch (tubeDir) {
                                 case 0: tile = Tile.TUBE_UP; break;
-                                case 0x66: tile = Tile.TUBE_RIGHT; break;
+                                case 0xff: tile = Tile.TUBE_RIGHT; break;
+                                case 0x66: tile = Tile.TUBE_LEFT; break;
                                 case 0x99: tile = Tile.TUBE_DOWN; break;
-                                case 0xff: tile = Tile.TUBE_LEFT; break;
                             }
 
                             map[x][y] = tile;
@@ -250,32 +250,37 @@ public class Level {
                     case TUBE_RIGHT:
                     case TUBE_DOWN:
                     case TUBE_LEFT: {
-                        r[i].set(x[i], y[i], 1, 1);
+//                        r[i].set(x[i], y[i], 1, 1);
 
                         Point otherTube = tubes.get(new Point(x[i], y[i]));
+
+                        System.out.printf("Player %.0f:%.0f(%d:%d) teleporting to ", player.x, player.y, x[i], y[i]);
+
                         if (otherTube != null)
                             switch (map[otherTube.x][otherTube.y]) {
                                 case TUBE_UP: {
                                     player.stop();
                                     player.x = otherTube.x * BLOCK_SIZE;
-                                    player.y = otherTube.y * BLOCK_SIZE + BLOCK_SIZE;
+                                    player.y = otherTube.y * BLOCK_SIZE + BLOCK_SIZE + 1;
                                 } break;
                                 case TUBE_RIGHT: {
                                     player.stop();
-                                    player.x = otherTube.x * BLOCK_SIZE + BLOCK_SIZE;
+                                    player.x = otherTube.x * BLOCK_SIZE + BLOCK_SIZE + 1;
                                     player.y = otherTube.y * BLOCK_SIZE;
                                 } break;
                                 case TUBE_DOWN: {
                                     player.stop();
                                     player.x = otherTube.x * BLOCK_SIZE;
-                                    player.y = otherTube.y * BLOCK_SIZE - BLOCK_SIZE;
+                                    player.y = otherTube.y * BLOCK_SIZE - BLOCK_SIZE - 1;
                                 } break;
                                 case TUBE_LEFT: {
                                     player.stop();
-                                    player.x = otherTube.x * BLOCK_SIZE - BLOCK_SIZE;
+                                    player.x = otherTube.x * BLOCK_SIZE - BLOCK_SIZE - 1;
                                     player.y = otherTube.y * BLOCK_SIZE;
                                 } break;
                             }
+
+                        System.out.printf("%.0f:%.0f(%d:%d)%n", player.x, player.y, otherTube.x, otherTube.y);
                     } break;
                     case AB_SWIM: {
                         player.abilities.add(Ability.SWIM);

@@ -52,8 +52,12 @@ public class Player {
         else
             vx += ax * dt;
 
-        if (gravityAffection)
-            ay += gravityDirection * GRAVITY;
+        if (gravityAffection) {
+            if (state == State.RUNNING)
+                ay += gravityDirection * GRAVITY;
+            else
+                ay += gravityDirection * GRAVITY / 10;
+        }
         vy += ay * dt;
 
         if (state == State.SWIM) {

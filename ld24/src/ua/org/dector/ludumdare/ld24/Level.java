@@ -2,9 +2,6 @@ package ua.org.dector.ludumdare.ld24;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.TextureData;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.PixmapTextureData;
 import com.badlogic.gdx.math.Rectangle;
 
 import static ua.org.dector.ludumdare.ld24.Renderer.BLOCK_SIZE;
@@ -31,6 +28,7 @@ public class Level {
     
     boolean wasCollided;
     int collidedCount;
+    int waterCount;
     
     int spawnX;
     int spawnY;
@@ -210,13 +208,21 @@ public class Level {
         }
         
         if (player.state == State.SWIM) {
-            if (! inWater)
-                player.state = State.RUNNING;
+            if (! inWater) {
+                waterCount++;
+
+                if (waterCount > 25) {
+                    player.state = State.RUNNING;
+                    player.abilities.remove(Ability.SWIM);
+                }
+            }
         } else if (inWater) {
             if (! player.abilities.contains(Ability.SWIM))
                 die();
-            else
+            else {
                 player.state = State.SWIM;
+                waterCount = 0;
+            }
         }
         
         return r;
@@ -231,6 +237,9 @@ public class Level {
     }
 
     void restart() {
+        collidedCount = 0;
+        waterCount = 0;
+        wasCollided = false;
         player.restart(spawnX, spawnY);
     }
 

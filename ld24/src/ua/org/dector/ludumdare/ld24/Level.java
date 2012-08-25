@@ -41,5 +41,9 @@ public class Level {
             }
         }
     }
+
+    public void update(float dt) {
+        player.update(dt);
+    }
 }
 

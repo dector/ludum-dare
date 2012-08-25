@@ -52,9 +52,11 @@ public class GameScreen implements Screen, InputProcessor {
         switch (keycode) {
             case Input.Keys.LEFT: {
                 level.player.direction = Direction.LEFT;
+                level.player.ax -= Player.ACCELERATION;
             } break;
             case Input.Keys.RIGHT: {
                 level.player.direction = Direction.RIGHT;
+                level.player.ax += Player.ACCELERATION;
             } break;
         }
         
@@ -62,7 +64,16 @@ public class GameScreen implements Screen, InputProcessor {
     }
 
     public boolean keyUp(int keycode) {
-        return false;
+        switch (keycode) {
+            case Input.Keys.LEFT: {
+                level.player.ax = 0;
+            } break;
+            case Input.Keys.RIGHT: {
+                level.player.ax = 0;
+            } break;
+        }
+
+        return true;
     }
 
     public boolean keyTyped(char character) {

@@ -86,6 +86,8 @@ public class Renderer {
     }
 
     public void render(float dt) {
+        level.update(dt);
+        
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
         
         sb.begin();

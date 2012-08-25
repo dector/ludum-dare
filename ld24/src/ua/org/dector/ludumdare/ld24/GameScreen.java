@@ -73,6 +73,10 @@ public class GameScreen implements Screen, InputProcessor {
             case Keys.DOWN: {
                 if (level.player.state == State.SWIM)
                     level.player.vy -= Player.SWIMMING;
+                else if (! level.player.gravityAffection) {
+                    level.player.clearSlick();
+                    level.wasCollided = false;
+                }
             } break;
             case Keys.R: {
                 renderer.restart();

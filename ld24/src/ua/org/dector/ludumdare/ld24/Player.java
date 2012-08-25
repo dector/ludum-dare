@@ -23,7 +23,8 @@ public class Player {
 
     Direction direction = Direction.RIGHT;
     int gravityDirection = -1;
-    
+    boolean gravityAffection = true;
+
     List<Ability> abilities;
 
     boolean isJumping;
@@ -50,7 +51,8 @@ public class Player {
         else
             vx += ax * dt;
 
-        ay += gravityDirection * GRAVITY;
+        if (gravityAffection)
+            ay += gravityDirection * GRAVITY;
         vy += ay * dt;
 
         if (state == State.SWIM) {
@@ -80,12 +82,18 @@ public class Player {
         win = false;
         vx = vy = ax = ay = 0;
         gravityDirection = -1;
+        gravityAffection = true;
         isJumping = jumpCommand = false;
         direction = Direction.RIGHT;
         
         abilities = new LinkedList<Ability>();
 
         state = State.RUNNING;
+    }
+
+    public void clearSlick() {
+        gravityAffection = true;
+        abilities.remove(Ability.SLICK);
     }
 }
 
@@ -94,7 +102,7 @@ enum Direction {
 }
 
 enum Ability {
-    SWIM
+    SWIM, SLICK
 }
 
 enum State {

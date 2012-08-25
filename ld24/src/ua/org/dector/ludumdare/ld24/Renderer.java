@@ -211,6 +211,8 @@ public class Renderer {
                             t = abilTex[AB_SWIM]; break;
                         case AB_GAS:
                             t = abilTex[AB_GAS]; break;
+                        case AB_SLICK:
+                            t = abilTex[AB_SLICK]; break;
                         
                         default: t = null; break;
                     }

@@ -22,10 +22,14 @@ public class Level {
     
     public static final int AB_SWIM = 0x009900ff;
     public static final int AB_GAS  = 0x66ccffff;
+    public static final int AB_SLICK= 0xff99ffff;
 
     int width;
     int height;
     Tile[][] map;
+    
+    boolean wasCollided;
+    int collidedCount;
     
     int spawnX;
     int spawnY;
@@ -70,6 +74,7 @@ public class Level {
                     
                     case AB_SWIM: map[x][y] = Tile.AB_SWIM; break;
                     case AB_GAS:  map[x][y] = Tile.AB_GAS; break;
+                    case AB_SLICK:map[x][y] = Tile.AB_SLICK; break;
                 }
             }
         }
@@ -143,6 +148,17 @@ public class Level {
 
             player.vy = 0;
             player.ay = 0;
+
+            if (! player.gravityAffection) {
+                wasCollided = true;
+                collidedCount++;
+            }
+
+        } else if (! player.gravityAffection && wasCollided) {
+            if (collidedCount > 2) {
+                player.clearSlick();
+                wasCollided = false;
+            }
         }
     }
 
@@ -173,8 +189,12 @@ public class Level {
                         removeTile(x[i], y[i]);
                     } break;
                     case AB_GAS: {
-//                        player.state = State.GAS;
                         player.gravityDirection = 1;
+                        removeTile(x[i], y[i]);
+                    } break;
+                    case AB_SLICK: {
+                        player.gravityAffection = false;
+                        player.abilities.add(Ability.SLICK);
                         removeTile(x[i], y[i]);
                     } break;
                     default: r[i].set(-1, -1, 1, 1); break;

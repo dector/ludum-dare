@@ -235,6 +235,8 @@ public class Renderer {
                             t = abilTex[AB_NORMAL]; break;
                         case AB_SOLID:
                             t = abilTex[AB_SOLID]; break;
+                        case AB_LIQUID:
+                            t = abilTex[AB_LIQUID]; break;
 
                         case TUBE_UP:
                             t = tube[TUBE_UP]; break;

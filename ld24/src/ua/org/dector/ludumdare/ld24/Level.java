@@ -28,6 +28,7 @@ public class Level {
     public static final int AB_SLICK= 0xff99ffff;
     public static final int AB_NORMAL= 0xffffffff;
     public static final int AB_SOLID= 0x9933ffff;
+    public static final int AB_LIQUID= 0x00ffffff;
 
     int width;
     int height;
@@ -91,6 +92,7 @@ public class Level {
                     case AB_GAS:  map[x][y] = Tile.AB_GAS; break;
                     case AB_SLICK:map[x][y] = Tile.AB_SLICK; break;
                     case AB_NORMAL:map[x][y] = Tile.AB_NORMAL; break;
+                    case AB_LIQUID:map[x][y] = Tile.AB_LIQUID; break;
                     case AB_SOLID:map[x][y] = Tile.AB_SOLID; break;
 
                     default: {  //  Test for tube
@@ -250,37 +252,47 @@ public class Level {
                     case TUBE_RIGHT:
                     case TUBE_DOWN:
                     case TUBE_LEFT: {
-//                        r[i].set(x[i], y[i], 1, 1);
+                        if (! player.abilities.contains(Ability.LIQUID)) {
+                            r[i].set(x[i], y[i], 1, 1);
+                        } else {
+                            Point otherTube = tubes.get(new Point(x[i], y[i]));
 
-                        Point otherTube = tubes.get(new Point(x[i], y[i]));
-
-                        System.out.printf("Player %.0f:%.0f(%d:%d) teleporting to ", player.x, player.y, x[i], y[i]);
-
-                        if (otherTube != null)
-                            switch (map[otherTube.x][otherTube.y]) {
-                                case TUBE_UP: {
-                                    player.stop();
-                                    player.x = otherTube.x * BLOCK_SIZE;
-                                    player.y = otherTube.y * BLOCK_SIZE + BLOCK_SIZE + 1;
-                                } break;
-                                case TUBE_RIGHT: {
-                                    player.stop();
-                                    player.x = otherTube.x * BLOCK_SIZE + BLOCK_SIZE + 1;
-                                    player.y = otherTube.y * BLOCK_SIZE;
-                                } break;
-                                case TUBE_DOWN: {
-                                    player.stop();
-                                    player.x = otherTube.x * BLOCK_SIZE;
-                                    player.y = otherTube.y * BLOCK_SIZE - BLOCK_SIZE - 1;
-                                } break;
-                                case TUBE_LEFT: {
-                                    player.stop();
-                                    player.x = otherTube.x * BLOCK_SIZE - BLOCK_SIZE - 1;
-                                    player.y = otherTube.y * BLOCK_SIZE;
-                                } break;
-                            }
-
-                        System.out.printf("%.0f:%.0f(%d:%d)%n", player.x, player.y, otherTube.x, otherTube.y);
+                            if (otherTube != null)
+                                switch (map[otherTube.x][otherTube.y]) {
+                                    case TUBE_UP: {
+                                        if (player.vy < 0) {
+                                            player.stop();
+                                            player.x = otherTube.x * BLOCK_SIZE;
+                                            player.y = otherTube.y * BLOCK_SIZE + BLOCK_SIZE + 1;
+                                            player.abilities.remove(Ability.LIQUID);
+                                        }
+                                    } break;
+                                    case TUBE_RIGHT: {
+                                        if (player.vx < 0) {
+                                            player.stop();
+                                            player.x = otherTube.x * BLOCK_SIZE + BLOCK_SIZE + 1;
+                                            player.y = otherTube.y * BLOCK_SIZE;
+                                            player.abilities.remove(Ability.LIQUID);
+                                        }
+                                    } break;
+                                    case TUBE_DOWN: {
+                                        if (player.vy > 0) {
+                                            player.stop();
+                                            player.x = otherTube.x * BLOCK_SIZE;
+                                            player.y = otherTube.y * BLOCK_SIZE - BLOCK_SIZE - 1;
+                                            player.abilities.remove(Ability.LIQUID);
+                                        }
+                                    } break;
+                                    case TUBE_LEFT: {
+                                        if (player.vx > 0) {
+                                            player.stop();
+                                            player.x = otherTube.x * BLOCK_SIZE - BLOCK_SIZE - 1;
+                                            player.y = otherTube.y * BLOCK_SIZE;
+                                            player.abilities.remove(Ability.LIQUID);
+                                        }
+                                    } break;
+                                }
+                        }
                     } break;
                     case AB_SWIM: {
                         player.abilities.add(Ability.SWIM);
@@ -304,6 +316,10 @@ public class Level {
                     case AB_SOLID: {
                         player.canJump = false;
                         player.abilities.add(Ability.SOLID);
+                        removeTile(x[i], y[i]);
+                    } break;
+                    case AB_LIQUID: {
+                        player.abilities.add(Ability.LIQUID);
                         removeTile(x[i], y[i]);
                     } break;
                     default: r[i].set(-1, -1, 1, 1); break;

@@ -81,6 +81,9 @@ public class GameScreen implements Screen, InputProcessor {
             case Keys.R: {
                 renderer.restart();
             } break;
+            case Keys.M: {
+                Sounds.get().mutedOff = ! Sounds.get().mutedOff;
+            } break;
         }
         
         return true;

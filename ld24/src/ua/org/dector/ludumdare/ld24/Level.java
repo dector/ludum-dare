@@ -149,6 +149,7 @@ public class Level {
                     || tile2 == Tile.TUBE_DOWN || tile2 == Tile.TUBE_LEFT);
 
             if (! player.isJumping && onTheGround) {
+//                Sounds.get().play(Sounds.JUMP);
                 player.vy -= player.gravityDirection * Player.JUMPING;
                 player.isJumping = true;
             }
@@ -246,6 +247,8 @@ public class Level {
                         if (Math.abs(player.vy) == Player.MAX_SPEED_Y && player.abilities.contains(Ability.SOLID)) {
                             map[x[i]][y[i]] = null;
                             broke = true;
+                            
+                            Sounds.get().play(Sounds.CRASH);
                         }
                     } break;
                     case TUBE_UP:
@@ -297,30 +300,36 @@ public class Level {
                     case AB_SWIM: {
                         player.abilities.add(Ability.SWIM);
                         removeTile(x[i], y[i]);
+                        Sounds.get().play(Sounds.POWER_UP);
                     } break;
                     case AB_GAS: {
                         player.gravityDirection = 1;
                         removeTile(x[i], y[i]);
+                        Sounds.get().play(Sounds.POWER_UP);
                     } break;
                     case AB_SLICK: {
                         player.gravityAffection = false;
                         player.abilities.add(Ability.SLICK);
                         removeTile(x[i], y[i]);
+                        Sounds.get().play(Sounds.POWER_UP);
                     } break;
                     case AB_NORMAL: {
                         player.gravityAffection = true;
                         player.gravityDirection = -1;
                         player.abilities.clear();
                         removeTile(x[i], y[i]);
+                        Sounds.get().play(Sounds.POWER_UP);
                     } break;
                     case AB_SOLID: {
                         player.canJump = false;
                         player.abilities.add(Ability.SOLID);
                         removeTile(x[i], y[i]);
+                        Sounds.get().play(Sounds.POWER_UP);
                     } break;
                     case AB_LIQUID: {
                         player.abilities.add(Ability.LIQUID);
                         removeTile(x[i], y[i]);
+                        Sounds.get().play(Sounds.POWER_UP);
                     } break;
                     default: r[i].set(-1, -1, 1, 1); break;
 
@@ -362,6 +371,7 @@ public class Level {
     }
 
     void restart() {
+        Sounds.get().play(Sounds.HIT);
         load(filename);
         collidedCount = 0;
         waterCount = 0;

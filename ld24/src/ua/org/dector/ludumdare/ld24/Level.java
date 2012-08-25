@@ -12,6 +12,7 @@ public class Level {
     public static final int BLOCK   = 0x000000ff;
     public static final int SPAWN   = 0x00ff00ff;
     public static final int EXIT    = 0x0000ffff;
+    public static final int DEATH   = 0xff0000ff;
 
     int width;
     int height;
@@ -41,7 +42,10 @@ public class Level {
                     } break;
                     case EXIT: {
                         map[x][y] = Tile.EXIT;
-                    }
+                    } break;
+                    case DEATH: {
+                        map[x][y] = Tile.DEATH;
+                    } break;
                 }
             }
         }
@@ -54,6 +58,19 @@ public class Level {
     }
 
     private void tryToMovePlayer() {
+        if (player.jumpCommand) {
+            boolean onTheGround =
+                    map[(int)player.x / Renderer.BLOCK_SIZE][(int)player.y / Renderer.BLOCK_SIZE - 1] == Tile.BLOCK
+                    || map[(int)player.x / Renderer.BLOCK_SIZE + 1][(int)player.y / Renderer.BLOCK_SIZE - 1] == Tile.BLOCK;
+
+            if (! player.isJumping && onTheGround) {
+                player.vy += player.JUMPING;
+                player.isJumping = true;
+            }
+
+            player.jumpCommand = false;
+        }
+
         Rectangle pr = new Rectangle((int)player.x / Renderer.BLOCK_SIZE, (int)Math.floor(player.y / Renderer.BLOCK_SIZE), 1, 1);
         Rectangle[] rs;
 
@@ -115,7 +132,8 @@ public class Level {
             if (tiles[i] != null)
                 switch (tiles[i]) {
                     case BLOCK: r[i].set(x[i], y[i], 1, 1); break;
-                    case EXIT: player.finished = true; break;
+                    case EXIT: if (i == 0) player.win = true; break;
+                    case DEATH: if (i == 0) player.dead = true; break;
                     default: r[i].set(-1, -1, 1, 1); break;
                 }
         }

@@ -1,12 +1,8 @@
 package ua.org.dector.ludumdare.ld24;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import ua.org.dector.ludumdare.ld24.Level;
-import ua.org.dector.ludumdare.ld24.Player;
-import ua.org.dector.ludumdare.ld24.Renderer;
 
 import static com.badlogic.gdx.Input.*;
 
@@ -61,7 +57,7 @@ public class GameScreen implements Screen, InputProcessor {
                 level.player.ax += Player.ACCELERATION;
             } break;
             case Keys.UP: {
-                level.player.tryToJump();
+                level.player.jump();
             } break;
         }
         

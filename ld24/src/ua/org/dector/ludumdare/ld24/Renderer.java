@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector3;
 
 /**
@@ -58,11 +57,25 @@ public class Renderer {
 
         Pixmap p = new Pixmap(levelTexWidth, levelTexHeight, Pixmap.Format.RGBA8888);
 
-        p.setColor(Color.GRAY);
         for (int x = 0; x < level.width; x++) {
             for (int y = level.height - 1; y >= 0; y--) {
-                if (level.map[x][level.height - y - 1] == Tile.BLOCK)
-                    p.fillRectangle(BLOCK_SIZE * x, BLOCK_SIZE * y, BLOCK_SIZE, BLOCK_SIZE);
+                Tile tile = level.map[x][level.height - y - 1];
+
+                if (tile != null)
+                    switch (tile) {
+                        case BLOCK: {
+                            p.setColor(Color.GRAY);
+                            p.fillRectangle(BLOCK_SIZE * x, BLOCK_SIZE * y, BLOCK_SIZE, BLOCK_SIZE);
+                        } break;
+                        case EXIT: {
+                            p.setColor(Color.BLUE);
+                            p.fillRectangle(BLOCK_SIZE * x, BLOCK_SIZE * y, BLOCK_SIZE, BLOCK_SIZE);
+                        } break;
+                        case DEATH: {
+                            p.setColor(Color.RED);
+                            p.fillRectangle(BLOCK_SIZE * x, BLOCK_SIZE * y, BLOCK_SIZE, BLOCK_SIZE);
+                        } break;
+                    }
             }
         }
 
@@ -92,7 +105,7 @@ public class Renderer {
     }
 
     public void render(float dt) {
-        if (! level.player.finished)
+        if (! level.player.win && ! level.player.dead)
             level.update(dt);
         
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);

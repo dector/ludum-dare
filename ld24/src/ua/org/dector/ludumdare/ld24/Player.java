@@ -16,7 +16,9 @@ public class Player {
     int gravityDirection = -1;
 
     boolean isJumping;
-    boolean finished;
+    boolean jumpCommand;
+    boolean win;
+    boolean dead;
 
     float x;
     float y;
@@ -53,11 +55,8 @@ public class Player {
         }
     }
 
-    public void tryToJump() {
-        if (! isJumping) {
-            isJumping = true;
-            vy += JUMPING;
-        }
+    public void jump() {
+        jumpCommand = true;
     }
 }
 

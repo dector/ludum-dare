@@ -2,11 +2,10 @@ package ua.org.dector.ludumdare.ld24;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 
 /**
  * @author dector
@@ -28,6 +27,7 @@ public class Renderer {
     OrthographicCamera cam;
 
     TextureRegion[] playerTex;
+    TextureRegion blockTex;
     TextureRegion levelTex;
 
     public Renderer(Level level) {
@@ -35,8 +35,8 @@ public class Renderer {
 
         sb = new SpriteBatch();
 
-        createMap();
         loadResources();
+        createMap();
 
         setupCamera();
     }
@@ -47,7 +47,30 @@ public class Renderer {
     }
 
     private void createMap() {
+        int levelTexWidth = BLOCK_SIZE * level.width;
+        int levelTexHeight = BLOCK_SIZE * level.height;
 
+        Pixmap p = new Pixmap(levelTexWidth, levelTexHeight, Pixmap.Format.RGBA8888);
+
+        p.setColor(Color.GRAY);
+        for (int x = 0; x < level.width; x++) {
+            for (int y = level.height - 1; y >= 0; y--) {
+                if (level.map[x][level.height - y - 1] == Tile.BLOCK)
+                    p.fillRectangle(BLOCK_SIZE * x, BLOCK_SIZE * y, BLOCK_SIZE, BLOCK_SIZE);
+            }
+        }
+
+        Pixmap p2 = new Pixmap(
+                Utils.toPowerOfTwo(levelTexWidth),
+                Utils.toPowerOfTwo(levelTexHeight),
+                Pixmap.Format.RGBA8888
+        );
+        p2.drawPixmap(p, 0, 0);
+        Texture t = new Texture(p2);
+        p.dispose();
+        p2.dispose();
+
+        levelTex = new TextureRegion(t, levelTexWidth, levelTexHeight);
     }
 
     private void loadResources() {
@@ -59,12 +82,19 @@ public class Renderer {
         playerTex[PLAYER_RIGHT] = textureRegions[0][0];
         playerTex[PLAYER_LEFT] = textureRegions[0][1];
         
+        blockTex = textureRegions[0][2];
     }
 
     public void render(float dt) {
+        Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+        
         sb.begin();
 
-        sb.setProjectionMatrix(cam.combined);
+//        sb.setProjectionMatrix(cam.combined);
+
+        // Render level
+
+        sb.draw(levelTex, 0, 0);
 
         // Render player
         
@@ -73,14 +103,6 @@ public class Renderer {
         else
             sb.draw(playerTex[PLAYER_LEFT], level.player.x, level.player.y);
         
-        // Render level
-        
-        for (int x = 0; x < level.width; x++) {
-            for (int y = 0; y < level.height; y++) {
-                
-            }
-        }
-
         sb.end();
     }
 }

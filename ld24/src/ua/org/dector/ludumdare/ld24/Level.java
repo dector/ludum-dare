@@ -27,13 +27,14 @@ public class Level {
         int t;
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                t = p.getPixel(x, y);
+                t = p.getPixel(x, height - y - 1);
 //                System.out.printf("%d:%d %s%n", x, y, Integer.toHexString(t));
                 
                 switch (t) {
-                    case BLOCK: map[x][y] = Tile.BLOCK; break;
+                    case BLOCK:
+                        map[x][y] = Tile.BLOCK; break;
                     case SPAWN: {
-                        player = new Player(x, y);
+                        player = new Player(Renderer.BLOCK_SIZE * x, Renderer.BLOCK_SIZE * y);
                         map[x][y] = Tile.SPAWN;
                     } break;
                 }
@@ -41,3 +42,4 @@ public class Level {
         }
     }
 }
+

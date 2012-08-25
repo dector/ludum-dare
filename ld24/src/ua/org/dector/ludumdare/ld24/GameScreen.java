@@ -10,7 +10,7 @@ import static com.badlogic.gdx.Input.*;
  * @author dector
  */
 public class GameScreen implements Screen, InputProcessor {
-    public static final String LEVEL_FILE = "ld24/data/level1.png";
+    public static final String LEVEL_FILE = "ld24/data/level2.png";
     
     Level level;
     Renderer renderer;

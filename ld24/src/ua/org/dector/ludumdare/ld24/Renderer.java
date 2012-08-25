@@ -42,6 +42,8 @@ public class Renderer {
     TextureRegion waterTex;
     TextureRegion deathTex;
     TextureRegion exitTex;
+    TextureRegion glassTex;
+
     TextureRegion levelTex;
 
     public Renderer(Level level) {
@@ -125,6 +127,7 @@ public class Renderer {
         waterTex = textureRegions[2][0];
         deathTex = textureRegions[2][1];
         exitTex  = textureRegions[2][2];
+        glassTex = textureRegions[2][3];
 
         abilTex = new TextureRegion[6];
         abilTex[AB_SOLID]   = textureRegions[0][2];
@@ -206,6 +209,9 @@ public class Renderer {
                         case DEATH: {
                             t = deathTex;
                         } break;
+                        case GLASS: {
+                            t = glassTex;
+                        } break;
 
                         case AB_SWIM:
                             t = abilTex[AB_SWIM]; break;
@@ -215,6 +221,8 @@ public class Renderer {
                             t = abilTex[AB_SLICK]; break;
                         case AB_NORMAL:
                             t = abilTex[AB_NORMAL]; break;
+                        case AB_SOLID:
+                            t = abilTex[AB_SOLID]; break;
                         
                         default: t = null; break;
                     }
@@ -227,8 +235,6 @@ public class Renderer {
     }
 
     public void restart() {
-        level.load(level.filename);
-        createMap();
         level.restart();
     }
 }

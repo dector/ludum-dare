@@ -16,11 +16,13 @@ public class Level {
     public static final int EXIT    = 0xff00ffff;
     public static final int WATER   = 0x0000ffff;
     public static final int DEATH   = 0xff0000ff;
-    
+    public static final int GLASS   = 0xffff00ff;
+
     public static final int AB_SWIM = 0x009900ff;
     public static final int AB_GAS  = 0x66ccffff;
     public static final int AB_SLICK= 0xff99ffff;
     public static final int AB_NORMAL= 0xffffffff;
+    public static final int AB_SOLID= 0x9933ffff;
 
     int width;
     int height;
@@ -70,11 +72,15 @@ public class Level {
                     case WATER: {
                         map[x][y] = Tile.WATER;
                     } break;
+                    case GLASS: {
+                        map[x][y] = Tile.GLASS;
+                    } break;
                     
                     case AB_SWIM: map[x][y] = Tile.AB_SWIM; break;
                     case AB_GAS:  map[x][y] = Tile.AB_GAS; break;
                     case AB_SLICK:map[x][y] = Tile.AB_SLICK; break;
                     case AB_NORMAL:map[x][y] = Tile.AB_NORMAL; break;
+                    case AB_SOLID:map[x][y] = Tile.AB_SOLID; break;
                 }
             }
         }
@@ -174,6 +180,7 @@ public class Level {
         Rectangle[] r = { new Rectangle(), new Rectangle(), new Rectangle(), new Rectangle() };
 
         boolean inWater = false;
+        boolean broke = false;
         
         for (int i = 0; i < tiles.length; i++) {
             if (tiles[i] != null)
@@ -183,6 +190,12 @@ public class Level {
                     case DEATH: die(); break;
                     case WATER: {
                         if (! inWater) inWater = true;
+                    } break;
+                    case GLASS: {
+                        if (Math.abs(player.vy) == Player.MAX_SPEED_Y && player.abilities.contains(Ability.SOLID)) {
+                            map[x[i]][y[i]] = null;
+                            broke = true;
+                        }
                     } break;
                     case AB_SWIM: {
                         player.abilities.add(Ability.SWIM);
@@ -203,10 +216,20 @@ public class Level {
                         player.abilities.clear();
                         removeTile(x[i], y[i]);
                     } break;
+                    case AB_SOLID: {
+                        player.canJump = false;
+                        player.abilities.add(Ability.SOLID);
+                        removeTile(x[i], y[i]);
+                    } break;
                     default: r[i].set(-1, -1, 1, 1); break;
                 }
         }
-        
+
+        if (broke) {
+            player.abilities.remove(Ability.SOLID);
+            player.canJump = true;
+        }
+
         if (player.state == State.SWIM) {
             if (! inWater) {
                 waterCount++;
@@ -237,6 +260,7 @@ public class Level {
     }
 
     void restart() {
+        load(filename);
         collidedCount = 0;
         waterCount = 0;
         wasCollided = false;

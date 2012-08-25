@@ -27,6 +27,7 @@ public class Player {
 
     List<Ability> abilities;
 
+    boolean canJump;
     boolean isJumping;
     boolean jumpCommand;
     boolean win;
@@ -72,7 +73,8 @@ public class Player {
     }
 
     public void jump() {
-        jumpCommand = true;
+        if (canJump)
+            jumpCommand = true;
     }
 
     public void restart(int spawnX, int spawnY) {
@@ -85,6 +87,8 @@ public class Player {
         gravityAffection = true;
         isJumping = jumpCommand = false;
         direction = Direction.RIGHT;
+
+        canJump = true;
         
         abilities = new LinkedList<Ability>();
 
@@ -102,7 +106,7 @@ enum Direction {
 }
 
 enum Ability {
-    SWIM, SLICK
+    SWIM, SLICK, SOLID
 }
 
 enum State {

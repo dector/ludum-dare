@@ -21,6 +21,7 @@ public class Level {
     public static final int DEATH   = 0xff0000ff;
     
     public static final int AB_SWIM = 0x009900ff;
+    public static final int AB_GAS  = 0x66ccffff;
 
     int width;
     int height;
@@ -68,6 +69,7 @@ public class Level {
                     } break;
                     
                     case AB_SWIM: map[x][y] = Tile.AB_SWIM; break;
+                    case AB_GAS:  map[x][y] = Tile.AB_GAS; break;
                 }
             }
         }
@@ -81,12 +83,14 @@ public class Level {
 
     private void tryToMovePlayer() {
         if (player.jumpCommand) {
+            int nextBlock = (player.gravityDirection < 0) ? -1 : 2;
+
             boolean onTheGround = player.state != State.SWIM
-                    && map[(int)player.x / BLOCK_SIZE][(int)player.y / BLOCK_SIZE - 1] == Tile.BLOCK
-                    || map[(int)player.x / BLOCK_SIZE + 1][(int)player.y / BLOCK_SIZE - 1] == Tile.BLOCK;
+                    && (map[(int)player.x / BLOCK_SIZE][(int)player.y / BLOCK_SIZE + nextBlock] == Tile.BLOCK
+                    || map[(int)player.x / BLOCK_SIZE + 1][(int)player.y / BLOCK_SIZE + nextBlock] == Tile.BLOCK);
 
             if (! player.isJumping && onTheGround) {
-                player.vy += player.JUMPING;
+                player.vy -= player.gravityDirection * Player.JUMPING;
                 player.isJumping = true;
             }
 
@@ -101,12 +105,12 @@ public class Level {
         player.x += player.vx;
         pr.setX((int)player.x / BLOCK_SIZE);
         rs = checkCollisions();
-        for (int i = 0; i < rs.length; i++) {
-            if (pr.overlaps(rs[i])) {
+        for (Rectangle r : rs) {
+            if (pr.overlaps(r)) {
                 if (player.vx < 0)
-                    player.x = (rs[i].x + 1) * BLOCK_SIZE + 0.01f;
+                    player.x = (r.x + 1) * BLOCK_SIZE + 0.01f;
                 else
-                    player.x = (rs[i].x - 1) * BLOCK_SIZE - 0.01f;
+                    player.x = (r.x - 1) * BLOCK_SIZE - 0.01f;
 
                 collided = true;
             }
@@ -119,19 +123,19 @@ public class Level {
         pr.setX((int)player.x / BLOCK_SIZE);
         pr.setY((int)Math.floor(player.y / BLOCK_SIZE));
         rs = checkCollisions();
-        for (int i = 0; i < rs.length; i++) {
-            if (pr.overlaps(rs[i])) {
+        for (Rectangle r : rs) {
+            if (pr.overlaps(r)) {
                 if (player.vy < 0)
-                    player.y = (rs[i].y + 1) * BLOCK_SIZE + 0.01f;
+                    player.y = (r.y + 1) * BLOCK_SIZE + 0.01f;
                 else
-                    player.y = (rs[i].y - 1) * BLOCK_SIZE - 0.01f;
+                    player.y = (r.y - 1) * BLOCK_SIZE - 0.01f;
 
                 collided = true;
             }
         }
 
         if (collided) {
-            if (player.isJumping && player.vy < 0)
+            if (player.isJumping && player.vy * player.gravityDirection > 0)
                 player.isJumping = false;
 
             player.vy = 0;
@@ -163,6 +167,11 @@ public class Level {
                     } break;
                     case AB_SWIM: {
                         player.abilities.add(Ability.SWIM);
+                        removeTile(x[i], y[i]);
+                    } break;
+                    case AB_GAS: {
+//                        player.state = State.GAS;
+                        player.gravityDirection = 1;
                         removeTile(x[i], y[i]);
                     } break;
                     default: r[i].set(-1, -1, 1, 1); break;

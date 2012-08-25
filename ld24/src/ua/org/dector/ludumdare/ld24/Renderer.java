@@ -17,6 +17,13 @@ public class Renderer {
     public static final int CAM_WIDTH = 640;
     public static final int CAM_HEIGHT = 480;
     
+    public static final int AB_JELLY = 0;
+    public static final int AB_LIQUID = 1;
+    public static final int AB_GAS = 2;
+    public static final int AB_SLICK = 3;
+    public static final int AB_SWIM = 4;
+    public static final int AB_NORMAL = 5;
+
     static final int PLAYER_RIGHT = 0;
     static final int PLAYER_LEFT = 1;
 
@@ -30,7 +37,11 @@ public class Renderer {
     OrthographicCamera cam;
 
     TextureRegion[] playerTex;
+    TextureRegion[] abilTex;
     TextureRegion blockTex;
+    TextureRegion waterTex;
+    TextureRegion deathTex;
+    TextureRegion exitTex;
     TextureRegion levelTex;
 
     public Renderer(Level level) {
@@ -110,7 +121,18 @@ public class Renderer {
         playerTex[PLAYER_LEFT] = new TextureRegion(playerTex[PLAYER_RIGHT]);
         playerTex[PLAYER_LEFT].flip(true, false);
         
-        blockTex = textureRegions[0][2];
+        blockTex = textureRegions[0][1];
+        waterTex = textureRegions[2][0];
+        deathTex = textureRegions[2][1];
+        exitTex  = textureRegions[2][2];
+
+        abilTex = new TextureRegion[6];
+        abilTex[AB_JELLY]   = textureRegions[0][2];
+        abilTex[AB_LIQUID]  = textureRegions[0][3];
+        abilTex[AB_GAS]     = textureRegions[1][0];
+        abilTex[AB_SLICK]   = textureRegions[1][1];
+        abilTex[AB_SWIM]    = textureRegions[1][2];
+        abilTex[AB_NORMAL]  = textureRegions[1][3];
     }
 
     public void render(float dt) {
@@ -125,7 +147,8 @@ public class Renderer {
         sb.begin();
 
         // Render level
-        sb.draw(levelTex, 0, 0);
+//        sb.draw(levelTex, 0, 0);
+        renderLevel();
 
         // Render player
         if (level.player.direction == Direction.RIGHT)
@@ -160,5 +183,46 @@ public class Renderer {
             font.drawMultiLine(uiSb, debugInfo, 10, App.SCREEN_HEIGHT - 10);
         }
         uiSb.end();
+    }
+
+    private void renderLevel() {
+        TextureRegion t = null;
+        
+        for (int x = 0; x < level.width; x++) {
+            for (int y = 0; y < level.height; y++) {
+                Tile tile = level.map[x][y];
+
+                if (tile != null) {
+                    switch (tile) {
+                        case BLOCK: {
+                            t = blockTex;
+                        } break;
+                        case WATER: {
+                            t = waterTex;
+                        } break;
+                        case EXIT: {
+                            t = exitTex;
+                        } break;
+                        case DEATH: {
+                            t = deathTex;
+                        } break;
+
+                        case AB_SWIM:
+                            t = abilTex[AB_SWIM]; break;
+                        
+                        default: t = null; break;
+                    }
+                    
+                    if (t != null)
+                        sb.draw(t, x * BLOCK_SIZE, y * BLOCK_SIZE);
+                }
+            }
+        }
+    }
+
+    public void restart() {
+        level.load(level.filename);
+        createMap();
+        level.restart();
     }
 }

@@ -2,6 +2,9 @@ package ua.org.dector.ludumdare.ld24;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.TextureData;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.PixmapTextureData;
 import com.badlogic.gdx.math.Rectangle;
 
 import static ua.org.dector.ludumdare.ld24.Renderer.BLOCK_SIZE;
@@ -16,6 +19,8 @@ public class Level {
     public static final int EXIT    = 0xff00ffff;
     public static final int WATER   = 0x0000ffff;
     public static final int DEATH   = 0xff0000ff;
+    
+    public static final int AB_SWIM = 0x009900ff;
 
     int width;
     int height;
@@ -25,8 +30,12 @@ public class Level {
     int spawnY;
     
     Player player;
+    
+    String filename;
 
     public void load(String file) {
+        this.filename = file;
+        
         Pixmap p = new Pixmap(Gdx.files.internal(file));
         
         width = p.getWidth();
@@ -57,6 +66,8 @@ public class Level {
                     case WATER: {
                         map[x][y] = Tile.WATER;
                     } break;
+                    
+                    case AB_SWIM: map[x][y] = Tile.AB_SWIM; break;
                 }
             }
         }
@@ -150,6 +161,10 @@ public class Level {
                     case WATER: {
                         if (! inWater) inWater = true;
                     } break;
+                    case AB_SWIM: {
+                        player.abilities.add(Ability.SWIM);
+                        removeTile(x[i], y[i]);
+                    } break;
                     default: r[i].set(-1, -1, 1, 1); break;
                 }
         }
@@ -165,6 +180,10 @@ public class Level {
         }
         
         return r;
+    }
+
+    private void removeTile(int x, int y) {
+        map[x][y] = null;
     }
 
     private void die() {

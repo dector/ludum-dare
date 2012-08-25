@@ -75,7 +75,7 @@ public class GameScreen implements Screen, InputProcessor {
                     level.player.ay -= Player.SWIMMING;
             } break;
             case Keys.R: {
-                level.restart();
+                renderer.restart();
             } break;
             case Keys.D: {
                 level.player.abilities.add(Ability.SWIM);

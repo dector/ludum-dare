@@ -29,13 +29,12 @@ public class Player {
         vy += ay * dt;
 
         if (vx > MAX_SPEED_X) vx = MAX_SPEED_X;
+        if (vx < -MAX_SPEED_X) vx = -MAX_SPEED_X;
         if (vy > MAX_SPEED_Y) vy = MAX_SPEED_Y;
+        if (vy < -MAX_SPEED_Y) vy = -MAX_SPEED_Y;
 
         if (ax == 0) vx *= FRICTION;
         if (ay == 0) vy *= FRICTION;
-
-        x += vx;
-        y += vy;
     }
 }
 

@@ -3,6 +3,7 @@ package ua.org.dector.ludumdare.ld24;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
@@ -24,6 +25,7 @@ public class Renderer {
     Level level;
 
     SpriteBatch sb;
+    BitmapFont font;
     OrthographicCamera cam;
 
     TextureRegion[] playerTex;
@@ -34,6 +36,7 @@ public class Renderer {
         this.level = level;
 
         sb = new SpriteBatch();
+        font = new BitmapFont();
 
         loadResources();
         createMap();
@@ -104,6 +107,20 @@ public class Renderer {
             sb.draw(playerTex[PLAYER_RIGHT], level.player.x, level.player.y);
         else
             sb.draw(playerTex[PLAYER_LEFT], level.player.x, level.player.y);
+        
+        if (Debug.DEBUG) {
+            String debugInfo = String.format(
+                    "Player: %.0f:%.0f\nLeft: %s\nRight: %s\nTop: %s\nBottom: %s",
+                    level.player.x,
+                    level.player.y,
+                    Debug.tileLeft,
+                    Debug.tileRight,
+                    Debug.tileTop,
+                    Debug.tileBottom
+
+            );
+            font.drawMultiLine(sb, debugInfo, 10, App.SCREEN_HEIGHT - 10);
+        }
         
         sb.end();
     }

@@ -23,6 +23,7 @@ public class Level {
     public static final int AB_SWIM = 0x009900ff;
     public static final int AB_GAS  = 0x66ccffff;
     public static final int AB_SLICK= 0xff99ffff;
+    public static final int AB_NORMAL= 0xffffffff;
 
     int width;
     int height;
@@ -75,6 +76,7 @@ public class Level {
                     case AB_SWIM: map[x][y] = Tile.AB_SWIM; break;
                     case AB_GAS:  map[x][y] = Tile.AB_GAS; break;
                     case AB_SLICK:map[x][y] = Tile.AB_SLICK; break;
+                    case AB_NORMAL:map[x][y] = Tile.AB_NORMAL; break;
                 }
             }
         }
@@ -195,6 +197,12 @@ public class Level {
                     case AB_SLICK: {
                         player.gravityAffection = false;
                         player.abilities.add(Ability.SLICK);
+                        removeTile(x[i], y[i]);
+                    } break;
+                    case AB_NORMAL: {
+                        player.gravityAffection = true;
+                        player.gravityDirection = -1;
+                        player.abilities.clear();
                         removeTile(x[i], y[i]);
                     } break;
                     default: r[i].set(-1, -1, 1, 1); break;

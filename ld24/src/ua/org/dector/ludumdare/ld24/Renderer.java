@@ -17,7 +17,7 @@ public class Renderer {
     public static final int CAM_WIDTH = 640;
     public static final int CAM_HEIGHT = 480;
     
-    public static final int AB_JELLY = 0;
+    public static final int AB_SOLID = 0;
     public static final int AB_LIQUID = 1;
     public static final int AB_GAS = 2;
     public static final int AB_SLICK = 3;
@@ -127,7 +127,7 @@ public class Renderer {
         exitTex  = textureRegions[2][2];
 
         abilTex = new TextureRegion[6];
-        abilTex[AB_JELLY]   = textureRegions[0][2];
+        abilTex[AB_SOLID]   = textureRegions[0][2];
         abilTex[AB_LIQUID]  = textureRegions[0][3];
         abilTex[AB_GAS]     = textureRegions[1][0];
         abilTex[AB_SLICK]   = textureRegions[1][1];
@@ -213,6 +213,8 @@ public class Renderer {
                             t = abilTex[AB_GAS]; break;
                         case AB_SLICK:
                             t = abilTex[AB_SLICK]; break;
+                        case AB_NORMAL:
+                            t = abilTex[AB_NORMAL]; break;
                         
                         default: t = null; break;
                     }

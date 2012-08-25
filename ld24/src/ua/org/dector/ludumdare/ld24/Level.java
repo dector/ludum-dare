@@ -50,7 +50,7 @@ public class Level {
     }
 
     private void tryToMovePlayer() {
-        Rectangle pr = new Rectangle((int)player.x / Renderer.BLOCK_SIZE, (int)player.y / Renderer.BLOCK_SIZE, 1, 1);
+        Rectangle pr = new Rectangle((int)player.x / Renderer.BLOCK_SIZE, (int)Math.floor(player.y / Renderer.BLOCK_SIZE), 1, 1);
         Rectangle[] rs;
 
         boolean collided = false;
@@ -61,9 +61,9 @@ public class Level {
         for (int i = 0; i < rs.length; i++) {
             if (pr.overlaps(rs[i])) {
                 if (player.vx < 0)
-                    player.x = (rs[i].x + 1) * Renderer.BLOCK_SIZE;
+                    player.x = (rs[i].x + 1) * Renderer.BLOCK_SIZE + 0.01f;
                 else
-                    player.x = (rs[i].x - 1) * Renderer.BLOCK_SIZE;
+                    player.x = (rs[i].x - 1) * Renderer.BLOCK_SIZE - 0.01f;
 
                 collided = true;
             }
@@ -74,14 +74,14 @@ public class Level {
 
         player.y += player.vy;
         pr.setX((int)player.x / Renderer.BLOCK_SIZE);
-        pr.setY((int) player.y / Renderer.BLOCK_SIZE);
+        pr.setY((int)Math.floor(player.y / Renderer.BLOCK_SIZE));
         rs = checkCollisions();
         for (int i = 0; i < rs.length; i++) {
             if (pr.overlaps(rs[i])) {
-                if (player.vx < 0)
-                    player.x = (rs[i].x + 1) * Renderer.BLOCK_SIZE;
+                if (player.vy < 0)
+                    player.y = (rs[i].y + 1) * Renderer.BLOCK_SIZE + 0.01f;
                 else
-                    player.x = (rs[i].x - 1) * Renderer.BLOCK_SIZE;
+                    player.y = (rs[i].y - 1) * Renderer.BLOCK_SIZE - 0.01f;
 
                 collided = true;
             }

@@ -4,10 +4,11 @@ package ua.org.dector.ludumdare.ld24;
  * @author dector
  */
 public class Player {
-    public static final float ACCELERATION = 0.9f;
+    public static final float ACCELERATION = 0.8f;
+    public static final float GRAVITY = 0.8f;
     public static final float FRICTION = 0.9f;
     public static final float MAX_SPEED_X = 5f;
-    public static final float MAX_SPEED_Y = 5f;
+    public static final float MAX_SPEED_Y = 2f;
 
     Direction direction = Direction.RIGHT;
     
@@ -26,7 +27,7 @@ public class Player {
 
     public void update(float dt) {
         vx += ax * dt;
-        vy += ay * dt;
+        vy += (ay - GRAVITY) * dt;
 
         if (vx > MAX_SPEED_X) vx = MAX_SPEED_X;
         if (vx < -MAX_SPEED_X) vx = -MAX_SPEED_X;
@@ -34,7 +35,6 @@ public class Player {
         if (vy < -MAX_SPEED_Y) vy = -MAX_SPEED_Y;
 
         if (ax == 0) vx *= FRICTION;
-        if (ay == 0) vy *= FRICTION;
     }
 }
 

@@ -21,7 +21,7 @@ public class GameScreen implements Screen, InputProcessor {
     
     public void render(float v) {
         if (Gdx.input.isKeyPressed(Keys.ESCAPE)) Gdx.app.exit();
-        
+
         renderer.render(v);
     }
 

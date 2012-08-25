@@ -11,6 +11,7 @@ public class Level {
     public static final int NOTHING = 0;
     public static final int BLOCK   = 0x000000ff;
     public static final int SPAWN   = 0x00ff00ff;
+    public static final int EXIT    = 0x0000ffff;
 
     int width;
     int height;
@@ -38,6 +39,9 @@ public class Level {
                         player = new Player(Renderer.BLOCK_SIZE * x, Renderer.BLOCK_SIZE * y);
                         map[x][y] = Tile.SPAWN;
                     } break;
+                    case EXIT: {
+                        map[x][y] = Tile.EXIT;
+                    }
                 }
             }
         }
@@ -100,44 +104,20 @@ public class Level {
         int px = (int)player.x / Renderer.BLOCK_SIZE;
         int py = (int)Math.floor(player.y / Renderer.BLOCK_SIZE);
 
-        int p1x = px;
-        int p1y = py;
-        int p2x = px + 1;
-        int p2y = py;
-        int p3x = px + 1;
-        int p3y = py + 1;
-        int p4x = px;
-        int p4y = py + 1;
+        int[] x = { px, px + 1, px + 1, px };
+        int[] y = { py, py, py + 1, py + 1 };
 
-        Tile tile1 = map[p1x][p1y];
-        Tile tile2 = map[p2x][p2y];
-        Tile tile3 = map[p3x][p3y];
-        Tile tile4 = map[p4x][p4y];
-
+        Tile[] tiles = { map[x[0]][y[0]], map[x[1]][y[1]], map[x[2]][y[2]], map[x[3]][y[3]] };
+        
         Rectangle[] r = { new Rectangle(), new Rectangle(), new Rectangle(), new Rectangle() };
 
-        if (tile1 == Tile.BLOCK)
-            r[0].set(p1x, p1y, 1, 1);
-        else
-            r[0].set(-1, -1, 0, 0);
-        if (tile2 == Tile.BLOCK)
-            r[1].set(p2x, p2y, 1, 1);
-        else
-            r[1].set(-1, -1, 0, 0);
-        if (tile3 == Tile.BLOCK)
-            r[2].set(p3x, p3y, 1, 1);
-        else
-            r[2].set(-1, -1, 0, 0);
-        if (tile4 == Tile.BLOCK)
-            r[3].set(p4x, p4y, 1, 1);
-        else
-            r[3].set(-1, -1, 0, 0);
-        
-        if (Debug.DEBUG) {
-            Debug.tileLeft = tile4;
-            Debug.tileRight = tile1;
-            Debug.tileTop = tile3;
-            Debug.tileBottom = tile2;
+        for (int i = 0; i < tiles.length; i++) {
+            if (tiles[i] != null)
+                switch (tiles[i]) {
+                    case BLOCK: r[i].set(x[i], y[i], 1, 1); break;
+                    case EXIT: player.finished = true; break;
+                    default: r[i].set(-1, -1, 1, 1); break;
+                }
         }
         
         return r;

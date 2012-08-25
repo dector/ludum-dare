@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.math.Vector3;
 
 /**
  * @author dector
@@ -25,6 +26,7 @@ public class Renderer {
     Level level;
 
     SpriteBatch sb;
+    SpriteBatch uiSb;
     BitmapFont font;
     OrthographicCamera cam;
 
@@ -36,6 +38,7 @@ public class Renderer {
         this.level = level;
 
         sb = new SpriteBatch();
+        uiSb = new SpriteBatch();
         font = new BitmapFont();
 
         loadResources();
@@ -89,37 +92,29 @@ public class Renderer {
     }
 
     public void render(float dt) {
-        level.update(dt);
+        if (! level.player.finished)
+            level.update(dt);
         
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-        
+
+        cam.position.lerp(new Vector3(level.player.x, level.player.y, 0), 2 * dt);
+        cam.update();
+        sb.setProjectionMatrix(cam.combined);
         sb.begin();
 
-//        sb.setProjectionMatrix(cam.combined);
-
         // Render level
-
         sb.draw(levelTex, 0, 0);
 
         // Render player
-        
         if (level.player.direction == Direction.RIGHT)
             sb.draw(playerTex[PLAYER_RIGHT], level.player.x, level.player.y);
         else
             sb.draw(playerTex[PLAYER_LEFT], level.player.x, level.player.y);
-        
-        if (Debug.DEBUG) {
-//            String debugInfo = String.format(
-//                    "Player: %.0f:%.0f\nLeft: %s\nRight: %s\nTop: %s\nBottom: %s",
-//                    level.player.x,
-//                    level.player.y,
-//                    Debug.tileLeft,
-//                    Debug.tileRight,
-//                    Debug.tileTop,
-//                    Debug.tileBottom
-//
-//            );
 
+        sb.end();
+
+        uiSb.begin();
+        if (Debug.DEBUG) {
             String debugInfo = String.format(
                     "Player: %.0f:%.0f\nVx: %.2f\nVy: %.2f\nAx: %.2f\nAy: %.2f",
                     level.player.x,
@@ -129,9 +124,8 @@ public class Renderer {
                     level.player.ax,
                     level.player.ay
             );
-            font.drawMultiLine(sb, debugInfo, 10, App.SCREEN_HEIGHT - 10);
+            font.drawMultiLine(uiSb, debugInfo, 10, App.SCREEN_HEIGHT - 10);
         }
-        
-        sb.end();
+        uiSb.end();
     }
 }

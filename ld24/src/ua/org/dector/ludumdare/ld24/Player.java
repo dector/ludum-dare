@@ -9,13 +9,14 @@ public class Player {
     public static final float GRAVITY = 0.8f;
     public static final float FRICTION = 0.8f;
     public static final float AIR_FRICTION = 1 - 0.1f;
-    public static final float MAX_SPEED_X = 4f;
+    public static final float MAX_SPEED_X = 2.5f;
     public static final float MAX_SPEED_Y = 4f;
 
     Direction direction = Direction.RIGHT;
     int gravityDirection = -1;
 
     boolean isJumping;
+    boolean finished;
 
     float x;
     float y;
@@ -50,8 +51,6 @@ public class Player {
             else
                 vx *= FRICTION;
         }
-
-        System.out.println(vx);
     }
 
     public void tryToJump() {

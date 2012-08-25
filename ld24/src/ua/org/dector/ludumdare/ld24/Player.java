@@ -50,8 +50,8 @@ public class Player {
         else
             vx += ax * dt;
 
-        ay += gravityDirection * GRAVITY * dt;
-        vy += ay;
+        ay += gravityDirection * GRAVITY;
+        vy += ay * dt;
 
         if (state == State.SWIM) {
             vx *= WATER_FRICTION;

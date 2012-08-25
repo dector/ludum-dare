@@ -54,7 +54,7 @@ public class GameScreen implements Screen, InputProcessor {
                 if (level.player.state == State.RUNNING)
                     level.player.ax -= Player.RUNNING;
                 else if (level.player.state == State.SWIM)
-                    level.player.ax -= Player.SWIMMING;
+                    level.player.ax -= 10 * Player.SWIMMING;
             } break;
             case Keys.RIGHT: {
                 level.player.direction = Direction.RIGHT;
@@ -62,23 +62,20 @@ public class GameScreen implements Screen, InputProcessor {
                 if (level.player.state == State.RUNNING)
                     level.player.ax += Player.RUNNING;
                 else if (level.player.state == State.SWIM)
-                    level.player.ax += Player.SWIMMING;
+                    level.player.ax += 10 * Player.SWIMMING;
             } break;
             case Keys.UP: {
                 if (level.player.state == State.RUNNING)
                     level.player.jump();
                 else if (level.player.state == State.SWIM)
-                    level.player.ay += Player.SWIMMING;
+                    level.player.vy += Player.SWIMMING;
             } break;
             case Keys.DOWN: {
                 if (level.player.state == State.SWIM)
-                    level.player.ay -= Player.SWIMMING;
+                    level.player.vy -= Player.SWIMMING;
             } break;
             case Keys.R: {
                 renderer.restart();
-            } break;
-            case Keys.D: {
-                level.player.abilities.add(Ability.SWIM);
             } break;
         }
         

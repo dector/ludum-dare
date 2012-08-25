@@ -138,6 +138,9 @@ public class Level {
             if (player.isJumping && player.vy * player.gravityDirection > 0)
                 player.isJumping = false;
 
+            if (player.gravityDirection > 0 && player.vy > 0)
+                player.gravityDirection = -1;
+
             player.vy = 0;
             player.ay = 0;
         }

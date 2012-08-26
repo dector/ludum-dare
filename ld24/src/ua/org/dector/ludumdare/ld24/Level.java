@@ -327,6 +327,7 @@ public class Level {
                         player.abilities.add(Ability.SLICK);
                         removeTile(x[i], y[i]);
                         Sounds.get().play(Sounds.POWER_UP);
+                        collidedCount = 0;
                     } break;
                     case AB_NORMAL: {
                         player.gravityAffection = true;

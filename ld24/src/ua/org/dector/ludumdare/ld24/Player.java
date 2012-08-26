@@ -85,6 +85,8 @@ public class Player {
         x = spawnX;
         y = spawnY;
 
+//        System.out.printf("Spawn player at: %d, %d%n", spawnX, spawnY);
+
         win = false;
         vx = vy = ax = ay = 0;
         gravityDirection = -1;
@@ -115,7 +117,7 @@ enum Direction {
 }
 
 enum Ability {
-    SWIM, SLICK, SOLID, LIQUID, GAS
+    SWIM, SLICK, SOLID, LIQUID, GAS, NORMAL
 }
 
 enum State {

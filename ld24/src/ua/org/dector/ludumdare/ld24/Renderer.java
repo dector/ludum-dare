@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
+import com.sun.servicetag.SystemEnvironment;
 
 /**
  * @author dector
@@ -304,8 +305,11 @@ public class Renderer {
             uiSb.draw(pauseTex, (CAM_WIDTH - PAUSE_WIDTH) / 2, (CAM_HEIGHT - PAUSE_HEIGHT) / 2, PAUSE_WIDTH, PAUSE_HEIGHT);
         }
         
-        if (level.started && ! level.player.win && infoTex != null) {
-            uiSb.draw(infoTex, (CAM_WIDTH - SIGN_WIDTH) / 2, (CAM_HEIGHT - SIGN_HEIGHT) / 2);
+        if (level.started && ! level.player.win) {
+            if (infoTex != null)
+                uiSb.draw(infoTex, (CAM_WIDTH - SIGN_WIDTH) / 2, (CAM_HEIGHT - SIGN_HEIGHT) / 2);
+            else
+                level.started = false;
         }
 
         uiSb.end();
@@ -411,15 +415,20 @@ public class Renderer {
         backC2 = (float)(BACK_HEIGHT - CAM_HEIGHT) / (level.height * (BLOCK_SIZE - 1));
         
         if (infoTex != null) infoTex.getTexture().dispose();
-        
-        Pixmap ip = new Pixmap(Gdx.files.internal(Levelset.getInfo()));
-        Texture iTex = new Texture(
-                Utils.toPowerOfTwo(ip.getWidth()),
-                Utils.toPowerOfTwo(ip.getHeight()),
-                Pixmap.Format.RGBA8888
-        );
-        iTex.draw(ip, 0, 0);
-        infoTex = new TextureRegion(iTex, SIGN_WIDTH, SIGN_HEIGHT);
-        ip.dispose();
+
+        String infoFile = Levelset.getInfo();
+//        System.out.println(infoFile);
+        if (infoFile != null) {
+            Pixmap ip = new Pixmap(Gdx.files.internal(infoFile));
+            Texture iTex = new Texture(
+                    Utils.toPowerOfTwo(ip.getWidth()),
+                    Utils.toPowerOfTwo(ip.getHeight()),
+                    Pixmap.Format.RGBA8888
+            );
+            iTex.draw(ip, 0, 0);
+            infoTex = new TextureRegion(iTex, SIGN_WIDTH, SIGN_HEIGHT);
+            ip.dispose();
+        } else
+            infoTex = null;
     }
 }

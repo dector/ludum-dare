@@ -70,7 +70,10 @@ public class Level {
                     case BLOCK:
                         map[x][y] = Tile.BLOCK; break;
                     case SPAWN: {
-                        player = new Player(BLOCK_SIZE * x, BLOCK_SIZE * y);
+                        if (player == null) {
+                            player = new Player(BLOCK_SIZE * x, BLOCK_SIZE * y);
+                        }
+
                         map[x][y] = Tile.SPAWN;
                         spawnX = x * BLOCK_SIZE;
                         spawnY = y * BLOCK_SIZE;
@@ -239,160 +242,170 @@ public class Level {
         int[] x = { px, px + 1, px + 1, px };
         int[] y = { py, py, py + 1, py + 1 };
 
-        Tile[] tiles = { map[x[0]][y[0]], map[x[1]][y[1]], map[x[2]][y[2]], map[x[3]][y[3]] };
-        
         Rectangle[] r = { new Rectangle(), new Rectangle(), new Rectangle(), new Rectangle() };
 
-        boolean inWater = false;
-        boolean broke = false;
-        
-        for (int i = 0; i < tiles.length; i++) {
-            if (tiles[i] != null)
-                switch (tiles[i]) {
-                    case BLOCK: r[i].set(x[i], y[i], 1, 1); break;
-                    case EXIT: {
-                        player.win = true;
-                        Sounds.get().play(Sounds.WIN);
-                    } break;
-                    case DEATH: die(); break;
-                    case WATER: {
-                        if (! inWater) inWater = true;
-                    } break;
-                    case GLASS: {
-                        if (! player.abilities.contains(Ability.SOLID))
-                            r[i].set(x[i], y[i], 1, 1);
-
-                        if (Math.abs(player.vy) == Player.MAX_SPEED_Y && player.abilities.contains(Ability.SOLID)) {
-                            map[x[i]][y[i]] = null;
-                            broke = true;
-                            
-                            Sounds.get().play(Sounds.CRASH);
-                        }
-                    } break;
-                    case TUBE_UP:
-                    case TUBE_RIGHT:
-                    case TUBE_DOWN:
-                    case TUBE_LEFT: {
-                        if (! player.abilities.contains(Ability.LIQUID)) {
-                            r[i].set(x[i], y[i], 1, 1);
-                        } else {
-                            Point otherTube = tubes.get(new Point(x[i], y[i]));
-
-//                            System.out.printf("Transporting to %d:%d%n", otherTube.x, otherTube.y);
-//                            System.out.printf("Where is %s%n", map[otherTube.x][otherTube.y]);
-//                            System.out.printf("Up is %s%n", map[otherTube.x][otherTube.y+1]);
-//                            System.out.printf("Down is %s%n", map[otherTube.x][otherTube.y-1]);
-//                            System.out.printf("Left is %s%n", map[otherTube.x-1][otherTube.y]);
-//                            System.out.printf("Right is %s%n", map[otherTube.x+1][otherTube.y]);
-
-                            if (otherTube != null)
-                                switch (map[otherTube.x][otherTube.y]) {
-                                    case TUBE_UP: {
-                                        /*if (player.vy < 0)*/ {
-                                            player.stop();
-                                            player.x = otherTube.x * BLOCK_SIZE;
-                                            player.y = otherTube.y * BLOCK_SIZE + BLOCK_SIZE + 1;
-                                            player.abilities.remove(Ability.LIQUID);
-                                            Sounds.get().play(Sounds.WHEEP);
-                                        }
-                                    } break;
-                                    case TUBE_RIGHT: {
-                                        /*if (player.vx < 0)*/ {
-                                            player.stop();
-                                            player.x = otherTube.x * BLOCK_SIZE + BLOCK_SIZE + 1;
-                                            player.y = otherTube.y * BLOCK_SIZE;
-                                            player.abilities.remove(Ability.LIQUID);
-                                            Sounds.get().play(Sounds.WHEEP);
-                                        }
-                                    } break;
-                                    case TUBE_DOWN: {
-                                        /*if (player.vy > 0)*/ {
-                                            player.stop();
-                                            player.x = otherTube.x * BLOCK_SIZE;
-                                            player.y = otherTube.y * BLOCK_SIZE - BLOCK_SIZE - 1;
-                                            player.abilities.remove(Ability.LIQUID);
-                                            Sounds.get().play(Sounds.WHEEP);
-                                        }
-                                    } break;
-                                    case TUBE_LEFT: {
-                                        /*if (player.vx > 0)*/ {
-                                            player.stop();
-                                            player.x = otherTube.x * BLOCK_SIZE - BLOCK_SIZE - 1;
-                                            player.y = otherTube.y * BLOCK_SIZE;
-                                            player.abilities.remove(Ability.LIQUID);
-                                            Sounds.get().play(Sounds.WHEEP);
-                                        }
-                                    } break;
-                                }
-                            
-                            renderer.cam.position.set(player.x, player.y, 0);
-                        }
-                    } break;
-                    case AB_SWIM: {
-                        player.abilities.add(Ability.SWIM);
-                        removeTile(x[i], y[i]);
-                        Sounds.get().play(Sounds.POWER_UP);
-                    } break;
-                    case AB_GAS: {
-                        player.gravityDirection = 1;
-                        player.abilities.add(Ability.GAS);
-                        removeTile(x[i], y[i]);
-                        Sounds.get().play(Sounds.POWER_UP);
-                    } break;
-                    case AB_SLICK: {
-                        player.gravityAffection = false;
-                        player.abilities.add(Ability.SLICK);
-                        removeTile(x[i], y[i]);
-                        Sounds.get().play(Sounds.POWER_UP);
-//                        collidedCount = 0;
-                    } break;
-                    case AB_NORMAL: {
-                        player.gravityAffection = true;
-                        player.gravityDirection = -1;
-                        player.abilities.clear();
-                        removeTile(x[i], y[i]);
-                        Sounds.get().play(Sounds.POWER_UP);
-                    } break;
-                    case AB_SOLID: {
-                        player.canJump = false;
-                        player.abilities.add(Ability.SOLID);
-                        removeTile(x[i], y[i]);
-                        Sounds.get().play(Sounds.POWER_UP);
-                    } break;
-                    case AB_LIQUID: {
-                        player.abilities.add(Ability.LIQUID);
-                        removeTile(x[i], y[i]);
-                        Sounds.get().play(Sounds.POWER_UP);
-                    } break;
-                    default: r[i].set(-1, -1, 1, 1); break;
-
+        try {
+            
+            Tile[] tiles = { map[x[0]][y[0]], map[x[1]][y[1]], map[x[2]][y[2]], map[x[3]][y[3]] };
+            
+            boolean inWater = false;
+            boolean broke = false;
+            
+            for (int i = 0; i < tiles.length; i++) {
+                if (tiles[i] != null)
+                    switch (tiles[i]) {
+                        case BLOCK: r[i].set(x[i], y[i], 1, 1); break;
+                        case EXIT: {
+                            player.win = true;
+                            Sounds.get().play(Sounds.WIN);
+                        } break;
+                        case DEATH: die(); break;
+                        case WATER: {
+                            if (! inWater) inWater = true;
+                        } break;
+                        case GLASS: {
+                            if (! player.abilities.contains(Ability.SOLID))
+                                r[i].set(x[i], y[i], 1, 1);
+    
+                            if (Math.abs(player.vy) == Player.MAX_SPEED_Y && player.abilities.contains(Ability.SOLID)) {
+                                map[x[i]][y[i]] = null;
+                                broke = true;
+                                
+                                Sounds.get().play(Sounds.CRASH);
+                            }
+                        } break;
+                        case TUBE_UP:
+                        case TUBE_RIGHT:
+                        case TUBE_DOWN:
+                        case TUBE_LEFT: {
+                            if (! player.abilities.contains(Ability.LIQUID)) {
+                                r[i].set(x[i], y[i], 1, 1);
+                            } else {
+                                Point otherTube = tubes.get(new Point(x[i], y[i]));
+    
+    //                            System.out.printf("Transporting to %d:%d%n", otherTube.x, otherTube.y);
+    //                            System.out.printf("Where is %s%n", map[otherTube.x][otherTube.y]);
+    //                            System.out.printf("Up is %s%n", map[otherTube.x][otherTube.y+1]);
+    //                            System.out.printf("Down is %s%n", map[otherTube.x][otherTube.y-1]);
+    //                            System.out.printf("Left is %s%n", map[otherTube.x-1][otherTube.y]);
+    //                            System.out.printf("Right is %s%n", map[otherTube.x+1][otherTube.y]);
+    
+                                if (otherTube != null)
+                                    switch (map[otherTube.x][otherTube.y]) {
+                                        case TUBE_UP: {
+                                            /*if (player.vy < 0)*/ {
+                                                player.stop();
+                                                player.x = otherTube.x * BLOCK_SIZE;
+                                                player.y = otherTube.y * BLOCK_SIZE + BLOCK_SIZE + 1;
+                                                player.abilities.remove(Ability.LIQUID);
+                                                Sounds.get().play(Sounds.WHEEP);
+                                            }
+                                        } break;
+                                        case TUBE_RIGHT: {
+                                            /*if (player.vx < 0)*/ {
+                                                player.stop();
+                                                player.x = otherTube.x * BLOCK_SIZE + BLOCK_SIZE + 1;
+                                                player.y = otherTube.y * BLOCK_SIZE;
+                                                player.abilities.remove(Ability.LIQUID);
+                                                Sounds.get().play(Sounds.WHEEP);
+                                            }
+                                        } break;
+                                        case TUBE_DOWN: {
+                                            /*if (player.vy > 0)*/ {
+                                                player.stop();
+                                                player.x = otherTube.x * BLOCK_SIZE;
+                                                player.y = otherTube.y * BLOCK_SIZE - BLOCK_SIZE - 1;
+                                                player.abilities.remove(Ability.LIQUID);
+                                                Sounds.get().play(Sounds.WHEEP);
+                                            }
+                                        } break;
+                                        case TUBE_LEFT: {
+                                            /*if (player.vx > 0)*/ {
+                                                player.stop();
+                                                player.x = otherTube.x * BLOCK_SIZE - BLOCK_SIZE - 1;
+                                                player.y = otherTube.y * BLOCK_SIZE;
+                                                player.abilities.remove(Ability.LIQUID);
+                                                Sounds.get().play(Sounds.WHEEP);
+                                            }
+                                        } break;
+                                    }
+                                
+                                renderer.cam.position.set(player.x, player.y, 0);
+                            }
+                        } break;
+                        case AB_SWIM: {
+                            getAbility(Ability.SWIM, x[i], y[i]);
+                        } break;
+                        case AB_GAS: {
+                            getAbility(Ability.GAS, x[i], y[i]);
+                        } break;
+                        case AB_SLICK: {
+                            getAbility(Ability.SLICK, x[i], y[i]);
+                        } break;
+                        case AB_NORMAL: {
+                            getAbility(Ability.NORMAL, x[i], y[i]);
+                        } break;
+                        case AB_SOLID: {
+                            getAbility(Ability.SOLID, x[i], y[i]);
+                        } break;
+                        case AB_LIQUID: {
+                            getAbility(Ability.LIQUID, x[i], y[i]);
+                        } break;
+                        default: r[i].set(-1, -1, 1, 1); break;
+    
+                    }
+            }
+    
+            if (broke) {
+                player.abilities.remove(Ability.SOLID);
+                player.canJump = true;
+            }
+    
+            if (player.state == State.SWIM) {
+                if (! inWater) {
+                    waterCount++;
+    
+                    if (waterCount > 25) {
+                        player.state = State.RUNNING;
+                        player.abilities.remove(Ability.SWIM);
+                    }
                 }
-        }
-
-        if (broke) {
-            player.abilities.remove(Ability.SOLID);
-            player.canJump = true;
-        }
-
-        if (player.state == State.SWIM) {
-            if (! inWater) {
-                waterCount++;
-
-                if (waterCount > 25) {
-                    player.state = State.RUNNING;
-                    player.abilities.remove(Ability.SWIM);
+            } else if (inWater) {
+                if (! player.abilities.contains(Ability.SWIM))
+                    die();
+                else {
+                    player.state = State.SWIM;
+                    waterCount = 0;
                 }
             }
-        } else if (inWater) {
-            if (! player.abilities.contains(Ability.SWIM))
-                die();
-            else {
-                player.state = State.SWIM;
-                waterCount = 0;
-            }
+        } catch (IndexOutOfBoundsException e) {
+            for (int i = 0; i < r.length; i++)
+                r[i].set(-1, -1, 0, 0);
         }
         
         return r;
+    }
+
+    public void getAbility(Ability ability) {
+        getAbility(ability, -1, -1);
+    }
+
+    public void getAbility(Ability ability, int x, int y) {
+        player.abilities.add(ability);
+        if (x > 0 && y > 0)
+            removeTile(x, y);
+        Sounds.get().play(Sounds.POWER_UP);
+
+        switch (ability) {
+            case GAS: player.gravityDirection = 1; break;
+            case SLICK: player.gravityAffection = false; break;
+            case NORMAL: {
+                player.gravityAffection = true;
+                player.gravityDirection = -1;
+                player.abilities.clear();
+            } break;
+            case SOLID: player.canJump = false; break;
+        }
     }
 
     private void removeTile(int x, int y) {

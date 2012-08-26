@@ -96,12 +96,12 @@ public class GameScreen implements Screen, InputProcessor {
             } break;
             case Keys.SPACE: {
                 if (level.player.win || Debug.DEBUG) {
-                    if (! Levelset.isLast()) {
-                        level.load(Levelset.next());
-                    } else {
+                    if (Levelset.isLast()) {
                         Levelset.restart();
+                    } else {
+                        Levelset.next();
                     }
-
+                    
                     level.started = true;
                     level.restart();
                 } else if (level.started) {
@@ -111,6 +111,25 @@ public class GameScreen implements Screen, InputProcessor {
             case Keys.F2: {
                 Debug.DEBUG = ! Debug.DEBUG;
             } break;
+            case Keys.NUM_1: if (Debug.DEBUG) level.getAbility(Ability.SWIM); break;
+            case Keys.NUM_2: if (Debug.DEBUG) level.getAbility(Ability.GAS); break;
+            case Keys.NUM_3: if (Debug.DEBUG) level.getAbility(Ability.SLICK); break;
+            case Keys.NUM_4: if (Debug.DEBUG) level.getAbility(Ability.SOLID); break;
+            case Keys.NUM_5: if (Debug.DEBUG) level.getAbility(Ability.LIQUID); break;
+            case Keys.NUM_6: if (Debug.DEBUG) level.getAbility(Ability.NORMAL); break;
+            case Keys.F5: if (Debug.DEBUG) {
+                Debug.savedX = (int)level.player.x;
+                Debug.savedY = (int)level.player.y;
+                Debug.abilities.clear();
+                Debug.abilities.addAll(level.player.abilities);
+            } break;
+            case Keys.F9: if (Debug.DEBUG) {
+                level.player.x = Debug.savedX;
+                level.player.y = Debug.savedY;
+                level.player.abilities.clear();
+                level.player.abilities.addAll(Debug.abilities);
+            } break;
+            case Keys.P: if (Debug.DEBUG) { Levelset.prev(); level.restart(); } break;
         }
         
         return true;

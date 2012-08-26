@@ -13,7 +13,9 @@ import com.badlogic.gdx.math.Vector3;
  */
 public class Renderer {
     public static final int SPRITE_SIZE = 16;
-    public static final int BLOCK_SIZE = 16;
+    public static final int DEFAULT_BLOCK_SIZE = 16;
+    public static final float MULT = 1;
+    public static final int BLOCK_SIZE = (int)(DEFAULT_BLOCK_SIZE * MULT);
     public static final int CAM_WIDTH = 640;
     public static final int CAM_HEIGHT = 480;
     
@@ -26,6 +28,9 @@ public class Renderer {
 
     static final int PLAYER_RIGHT = 0;
     static final int PLAYER_LEFT = 1;
+    
+    public static final int PAUSE_WIDTH = CAM_WIDTH / 5;
+    public static final int PAUSE_HEIGHT = CAM_HEIGHT / 5;
     
     public static final int TUBE_UP = 0;
     public static final int TUBE_RIGHT = 1;
@@ -49,6 +54,9 @@ public class Renderer {
     TextureRegion deathTex;
     TextureRegion exitTex;
     TextureRegion glassTex;
+
+    TextureRegion pauseTex;
+    TextureRegion darkTex;
 
     TextureRegion levelTex;
 
@@ -148,10 +156,22 @@ public class Renderer {
         tube[TUBE_RIGHT] = textureRegions[3][1];
         tube[TUBE_DOWN] = textureRegions[3][2];
         tube[TUBE_LEFT] = textureRegions[3][3];
+
+        Pixmap darkP = new Pixmap(
+                Utils.toPowerOfTwo(CAM_WIDTH),
+                Utils.toPowerOfTwo(CAM_HEIGHT),
+                Pixmap.Format.RGBA8888
+        );
+        darkP.setColor(Color.rgba8888(0, 0, 0, 0.7f));
+        darkP.fill();
+        darkTex = new TextureRegion(new Texture(darkP));
+        darkP.dispose();
+        
+        pauseTex = textureRegions[4][1];
     }
 
     public void render(float dt) {
-        if (! level.player.win)
+        if (! level.player.win && ! level.paused)
             level.update(dt);
         
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
@@ -167,9 +187,9 @@ public class Renderer {
 
         // Render player
         if (level.player.direction == Direction.RIGHT)
-            sb.draw(playerTex[PLAYER_RIGHT], level.player.x, level.player.y);
+            sb.draw(playerTex[PLAYER_RIGHT], level.player.x, level.player.y, BLOCK_SIZE, BLOCK_SIZE);
         else
-            sb.draw(playerTex[PLAYER_LEFT], level.player.x, level.player.y);
+            sb.draw(playerTex[PLAYER_LEFT], level.player.x, level.player.y, BLOCK_SIZE, BLOCK_SIZE);
 
         sb.end();
 
@@ -197,6 +217,12 @@ public class Renderer {
             );
             font.drawMultiLine(uiSb, debugInfo, 10, App.SCREEN_HEIGHT - 10);
         }
+        
+        if (level.paused) {
+            uiSb.draw(darkTex, 0, 0, CAM_WIDTH, CAM_HEIGHT);
+            uiSb.draw(pauseTex, (CAM_WIDTH - PAUSE_WIDTH) / 2, (CAM_HEIGHT - PAUSE_HEIGHT) / 2, PAUSE_WIDTH, PAUSE_HEIGHT);
+        }
+        
         uiSb.end();
     }
 
@@ -251,7 +277,7 @@ public class Renderer {
                     }
                     
                     if (t != null)
-                        sb.draw(t, x * BLOCK_SIZE, y * BLOCK_SIZE);
+                        sb.draw(t, x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
                 }
             }
         }

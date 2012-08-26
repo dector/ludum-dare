@@ -4,7 +4,7 @@ package ua.org.dector.ludumdare.ld24;
  * @author dector
  */
 public class Debug {
-    public static boolean DEBUG = true;
+    public static boolean DEBUG = false;
 
     public static Tile tileLeft;
     public static Tile tileRight;

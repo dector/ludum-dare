@@ -37,6 +37,8 @@ public class Level {
     boolean wasCollided;
     int collidedCount;
     int waterCount;
+
+    boolean paused = false;
     
     int spawnX;
     int spawnY;
@@ -376,6 +378,7 @@ public class Level {
         collidedCount = 0;
         waterCount = 0;
         wasCollided = false;
+        paused = false;
         player.restart(spawnX, spawnY);
     }
 

@@ -9,17 +9,17 @@ import java.util.Map;
  * @author dector
  */
 public class Player {
-    public static final float RUNNING = 3.5f;
-    public static final float SWIMMING = 3.5f;
-    public static final float JUMPING = 3.655f;
-    public static final float GRAVITY = 0.8f;
+    public static final float RUNNING = 3.5f * Renderer.MULT;
+    public static final float SWIMMING = 3.5f * Renderer.MULT;
+    public static final float JUMPING = 3.655f * Renderer.MULT;
+    public static final float GRAVITY = 0.8f * Renderer.MULT;
 
     public static final float FRICTION = 0.8f;
-    public static final float AIR_FRICTION = 1 - 0.1f;
+    public static final float AIR_FRICTION = (1 - 0.1f);
     public static final float WATER_FRICTION = 0.9f;
 
-    public static final float MAX_SPEED_X = 2.5f;
-    public static final float MAX_SPEED_Y = 4f;
+    public static final float MAX_SPEED_X = 2.5f * Renderer.MULT;
+    public static final float MAX_SPEED_Y = 4f * Renderer.MULT;
 
     Direction direction = Direction.RIGHT;
     int gravityDirection = -1;

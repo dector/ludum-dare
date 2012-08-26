@@ -49,37 +49,48 @@ public class GameScreen implements Screen, InputProcessor {
     public boolean keyDown(int keycode) {
         switch (keycode) {
             case Keys.LEFT: {
-                level.player.direction = Direction.LEFT;
+                if (! level.paused) {
+                    level.player.direction = Direction.LEFT;
 
-                if (level.player.state == State.RUNNING)
-                    level.player.ax -= Player.RUNNING;
-                else if (level.player.state == State.SWIM)
-                    level.player.ax -= 5 * Player.SWIMMING;
+                    if (level.player.state == State.RUNNING)
+                        level.player.ax -= Player.RUNNING;
+                    else if (level.player.state == State.SWIM)
+                        level.player.ax -= 5 * Player.SWIMMING;
+                }
             } break;
             case Keys.RIGHT: {
-                level.player.direction = Direction.RIGHT;
+                if (! level.paused) {
+                    level.player.direction = Direction.RIGHT;
 
-                if (level.player.state == State.RUNNING)
-                    level.player.ax += Player.RUNNING;
-                else if (level.player.state == State.SWIM)
-                    level.player.ax += 5 * Player.SWIMMING;
+                    if (level.player.state == State.RUNNING)
+                        level.player.ax += Player.RUNNING;
+                    else if (level.player.state == State.SWIM)
+                        level.player.ax += 5 * Player.SWIMMING;
+                }
             } break;
             case Keys.UP: {
-                if (level.player.state == State.RUNNING)
-                    level.player.jump();
-                else if (level.player.state == State.SWIM)
-                    level.player.vy += Player.SWIMMING / 2;
+                if (! level.paused) {
+                    if (level.player.state == State.RUNNING)
+                        level.player.jump();
+                    else if (level.player.state == State.SWIM)
+                        level.player.vy += Player.SWIMMING / 2;
+                }
             } break;
             case Keys.DOWN: {
-                if (level.player.state == State.SWIM)
-                    level.player.vy -= Player.SWIMMING / 2;
-                else if (! level.player.gravityAffection) {
-                    level.player.clearSlick();
-                    level.wasCollided = false;
+                if (! level.paused) {
+                    if (level.player.state == State.SWIM)
+                        level.player.vy -= Player.SWIMMING / 2;
+                    else if (! level.player.gravityAffection) {
+                        level.player.clearSlick();
+                        level.wasCollided = false;
+                    }
                 }
             } break;
             case Keys.R: {
                 renderer.restart();
+            } break;
+            case Keys.ENTER: {
+                level.paused = ! level.paused;
             } break;
             case Keys.M: {
                 Sounds.get().mutedOff = ! Sounds.get().mutedOff;
@@ -92,18 +103,26 @@ public class GameScreen implements Screen, InputProcessor {
     public boolean keyUp(int keycode) {
         switch (keycode) {
             case Keys.LEFT: {
-                level.player.ax = 0;
+                if (! level.paused) {
+                    level.player.ax = 0;
+                }
             } break;
             case Keys.RIGHT: {
-                level.player.ax = 0;
+                if (! level.paused) {
+                    level.player.ax = 0;
+                }
             } break;
             case Keys.UP: {
-                if (level.player.state == State.SWIM)
-                    level.player.ay = 0;
+                if (! level.paused) {
+                    if (level.player.state == State.SWIM)
+                        level.player.ay = 0;
+                }
             } break;
             case Keys.DOWN: {
-                if (level.player.state == State.SWIM)
-                    level.player.ay = 0;
+                if (! level.paused) {
+                    if (level.player.state == State.SWIM)
+                        level.player.ay = 0;
+                }
             } break;
         }
 

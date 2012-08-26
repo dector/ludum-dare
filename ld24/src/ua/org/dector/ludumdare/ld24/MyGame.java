@@ -7,7 +7,7 @@ import com.badlogic.gdx.Game;
  */
 public class MyGame extends Game {
     public void create() {
-        setScreen(new GameScreen());
+        setScreen(new TitleScreen(this));
     }
 }
 

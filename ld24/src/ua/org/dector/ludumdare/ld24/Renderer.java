@@ -38,7 +38,7 @@ public class Renderer {
     public static final int TUBE_LEFT = 3;
 
     public static final String GRAPHICS_FILE = "ld24/data/graphics.png";
-    
+
     Level level;
 
     SpriteBatch sb;
@@ -193,6 +193,8 @@ public class Renderer {
 
         sb.end();
 
+        // Render UI
+
         uiSb.begin();
         if (level.player.win) {
             String wonStr = "You won!";
@@ -222,7 +224,7 @@ public class Renderer {
             uiSb.draw(darkTex, 0, 0, CAM_WIDTH, CAM_HEIGHT);
             uiSb.draw(pauseTex, (CAM_WIDTH - PAUSE_WIDTH) / 2, (CAM_HEIGHT - PAUSE_HEIGHT) / 2, PAUSE_WIDTH, PAUSE_HEIGHT);
         }
-        
+
         uiSb.end();
     }
 

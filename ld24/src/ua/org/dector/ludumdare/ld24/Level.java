@@ -210,7 +210,7 @@ public class Level {
             }
 
         } else if (! player.gravityAffection && wasCollided) {
-            if (collidedCount > 2) {
+            if (collidedCount > 5) {
                 player.clearSlick();
                 wasCollided = false;
             }

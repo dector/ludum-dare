@@ -11,7 +11,7 @@ import java.util.Map;
 public class Player {
     public static final float RUNNING = 3.5f;
     public static final float SWIMMING = 3.5f;
-    public static final float JUMPING = 3.55f;
+    public static final float JUMPING = 3.655f;
     public static final float GRAVITY = 0.8f;
 
     public static final float FRICTION = 0.8f;

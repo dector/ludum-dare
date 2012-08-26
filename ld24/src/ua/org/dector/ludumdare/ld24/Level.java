@@ -240,7 +240,10 @@ public class Level {
             if (tiles[i] != null)
                 switch (tiles[i]) {
                     case BLOCK: r[i].set(x[i], y[i], 1, 1); break;
-                    case EXIT: player.win = true; break;
+                    case EXIT: {
+                        player.win = true;
+                        Sounds.get().play(Sounds.WIN);
+                    } break;
                     case DEATH: die(); break;
                     case WATER: {
                         if (! inWater) inWater = true;

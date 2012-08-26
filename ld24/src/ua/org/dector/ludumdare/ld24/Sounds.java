@@ -15,6 +15,7 @@ public class Sounds {
     public static final String SELECT   = "ld24/data/Select.wav";
 //    public static final String JUMP     = "ld24/data/Jump.wav";
     public static final String HIT      = "ld24/data/Hit.wav";
+    public static final String WIN      = "ld24/data/Win.wav";
 
     private static Sounds instance;
     

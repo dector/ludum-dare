@@ -101,6 +101,7 @@ public class Player {
 
     public void clearSlick() {
         gravityAffection = true;
+        gravityDirection = -1;
         abilities.remove(Ability.SLICK);
     }
 

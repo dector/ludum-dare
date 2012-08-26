@@ -81,7 +81,7 @@ public class GameScreen implements Screen, InputProcessor {
                         level.player.vy -= Player.SWIMMING / 2;
                     else if (! level.player.gravityAffection) {
                         level.player.clearSlick();
-                        level.wasCollided = false;
+//                        level.wasCollided = false;
                     }
                 }
             } break;

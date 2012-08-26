@@ -32,8 +32,8 @@ public class Level {
     int height;
     Tile[][] map;
     
-    boolean wasCollided;
-    int collidedCount;
+//    boolean wasCollided;
+//    int collidedCount;
     int waterCount;
 
     boolean paused = false;
@@ -136,7 +136,9 @@ public class Level {
     }
 
     private void tryToMovePlayer() {
-        if (player.jumpCommand) {
+        boolean sticked = player.abilities.contains(Ability.SLICK);
+
+        if (player.jumpCommand || sticked) {
             int nextBlock = (player.gravityDirection < 0) ? -1 : 2;
 
             Tile tile1 = map[(int)player.x / BLOCK_SIZE][(int)player.y / BLOCK_SIZE + nextBlock];
@@ -148,16 +150,21 @@ public class Level {
                     || tile2 == Tile.BLOCK || tile2 == Tile.GLASS || tile2 == Tile.TUBE_UP || tile2 == Tile.TUBE_RIGHT
                     || tile2 == Tile.TUBE_DOWN || tile2 == Tile.TUBE_LEFT);
 
-            if (! player.isJumping && onTheGround && ! player.abilities.contains(Ability.SLICK)) {
+            if (! player.isJumping && onTheGround && ! sticked) {
 //                Sounds.get().play(Sounds.JUMP);
                 player.vy -= player.gravityDirection * Player.JUMPING;
                 player.isJumping = true;
+            } else if (! onTheGround && sticked) {
+               player.clearSlick();
             }
 
             player.jumpCommand = false;
         }
 
-        Rectangle pr = new Rectangle((int)player.x / BLOCK_SIZE, (int)Math.floor(player.y / BLOCK_SIZE), 1, 1);
+        Rectangle pr = new Rectangle((int)player.x / BLOCK_SIZE +
+                (((int)player.x % BLOCK_SIZE == 0) ? 0 : 1),
+                (int)Math.floor(player.y / BLOCK_SIZE) +
+                (((int)player.y % BLOCK_SIZE == 0) ? 0 : 1), 1, 1);
         Rectangle[] rs;
 
         boolean collided = false;
@@ -199,29 +206,30 @@ public class Level {
                 player.isJumping = false;
 
             if (player.gravityDirection > 0 && player.vy > 0) {
-                if (! player.abilities.contains(Ability.SLICK)) {
+//                if (! player.abilities.contains(Ability.SLICK)) {
+//                    wasCollided = true;
+//                    collidedCount = 50;
+//                }
+
+                if (! sticked)
                     player.gravityDirection = -1;
-                    wasCollided = true;
-                    collidedCount = 50;
-                } 
-                
+
                 player.abilities.remove(Ability.GAS);
             }
 
             player.vy = 0;
             player.ay = 0;
 
-            if (! player.gravityAffection) {
-                wasCollided = true;
-                collidedCount++;
-            }
-
-        } else if (! player.gravityAffection && wasCollided) {
-            if (collidedCount > 5) {
-                player.clearSlick();
-                wasCollided = false;
-            }
-        }
+//            if (! player.gravityAffection) {
+//                wasCollided = true;
+//                collidedCount++;
+//            }
+        } /*else if (! player.gravityAffection*//* && wasCollided*//*) {
+//            if (collidedCount > 5) {
+//                player.clearSlick();
+//                wasCollided = false;
+//            }
+        }*/
     }
 
     private Rectangle[] checkCollisions() {
@@ -327,7 +335,7 @@ public class Level {
                         player.abilities.add(Ability.SLICK);
                         removeTile(x[i], y[i]);
                         Sounds.get().play(Sounds.POWER_UP);
-                        collidedCount = 0;
+//                        collidedCount = 0;
                     } break;
                     case AB_NORMAL: {
                         player.gravityAffection = true;
@@ -390,9 +398,9 @@ public class Level {
         Sounds.get().play(Sounds.HIT);
         load(Levelset.getLevel());
         renderer.loadLevelTexs();
-        collidedCount = 0;
+//        collidedCount = 0;
         waterCount = 0;
-        wasCollided = false;
+//        wasCollided = false;
         paused = false;
         player.restart(spawnX, spawnY);
     }

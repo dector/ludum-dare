@@ -233,6 +233,7 @@ public class Renderer {
         
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
+//        System.out.println(level.player.x, level.player.y);
         cam.position.lerp(new Vector3(level.player.x, level.player.y, 0), 2 * dt);
         cam.update();
         sb.setProjectionMatrix(cam.combined);
@@ -303,7 +304,7 @@ public class Renderer {
             uiSb.draw(pauseTex, (CAM_WIDTH - PAUSE_WIDTH) / 2, (CAM_HEIGHT - PAUSE_HEIGHT) / 2, PAUSE_WIDTH, PAUSE_HEIGHT);
         }
         
-        if (level.started && ! level.player.win) {
+        if (level.started && ! level.player.win && infoTex != null) {
             uiSb.draw(infoTex, (CAM_WIDTH - SIGN_WIDTH) / 2, (CAM_HEIGHT - SIGN_HEIGHT) / 2);
         }
 
@@ -312,7 +313,7 @@ public class Renderer {
 
     private void drawReachedAbilities() {
         int abils = level.player.abilities.size() + 1;
-        int sumWidth = abils * (REACHED_AB_WIDTH + REACHED_AB_SPACE) - REACHED_AB_SPACE; 
+        int sumWidth = abils * (REACHED_AB_WIDTH + REACHED_AB_SPACE) - REACHED_AB_SPACE;
 
         int x = (CAM_WIDTH - sumWidth) / 2;
         int y = REACHED_AB_BOTTOM_PAD;

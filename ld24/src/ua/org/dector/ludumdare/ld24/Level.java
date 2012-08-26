@@ -278,10 +278,17 @@ public class Level {
                         } else {
                             Point otherTube = tubes.get(new Point(x[i], y[i]));
 
+//                            System.out.printf("Transporting to %d:%d%n", otherTube.x, otherTube.y);
+//                            System.out.printf("Where is %s%n", map[otherTube.x][otherTube.y]);
+//                            System.out.printf("Up is %s%n", map[otherTube.x][otherTube.y+1]);
+//                            System.out.printf("Down is %s%n", map[otherTube.x][otherTube.y-1]);
+//                            System.out.printf("Left is %s%n", map[otherTube.x-1][otherTube.y]);
+//                            System.out.printf("Right is %s%n", map[otherTube.x+1][otherTube.y]);
+
                             if (otherTube != null)
                                 switch (map[otherTube.x][otherTube.y]) {
                                     case TUBE_UP: {
-                                        if (player.vy < 0) {
+                                        /*if (player.vy < 0)*/ {
                                             player.stop();
                                             player.x = otherTube.x * BLOCK_SIZE;
                                             player.y = otherTube.y * BLOCK_SIZE + BLOCK_SIZE + 1;
@@ -290,7 +297,7 @@ public class Level {
                                         }
                                     } break;
                                     case TUBE_RIGHT: {
-                                        if (player.vx < 0) {
+                                        /*if (player.vx < 0)*/ {
                                             player.stop();
                                             player.x = otherTube.x * BLOCK_SIZE + BLOCK_SIZE + 1;
                                             player.y = otherTube.y * BLOCK_SIZE;
@@ -299,7 +306,7 @@ public class Level {
                                         }
                                     } break;
                                     case TUBE_DOWN: {
-                                        if (player.vy > 0) {
+                                        /*if (player.vy > 0)*/ {
                                             player.stop();
                                             player.x = otherTube.x * BLOCK_SIZE;
                                             player.y = otherTube.y * BLOCK_SIZE - BLOCK_SIZE - 1;
@@ -308,7 +315,7 @@ public class Level {
                                         }
                                     } break;
                                     case TUBE_LEFT: {
-                                        if (player.vx > 0) {
+                                        /*if (player.vx > 0)*/ {
                                             player.stop();
                                             player.x = otherTube.x * BLOCK_SIZE - BLOCK_SIZE - 1;
                                             player.y = otherTube.y * BLOCK_SIZE;
@@ -317,6 +324,8 @@ public class Level {
                                         }
                                     } break;
                                 }
+                            
+                            renderer.cam.position.set(player.x, player.y, 0);
                         }
                     } break;
                     case AB_SWIM: {

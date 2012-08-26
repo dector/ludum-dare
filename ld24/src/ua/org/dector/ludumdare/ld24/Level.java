@@ -150,7 +150,7 @@ public class Level {
                     || tile2 == Tile.BLOCK || tile2 == Tile.GLASS || tile2 == Tile.TUBE_UP || tile2 == Tile.TUBE_RIGHT
                     || tile2 == Tile.TUBE_DOWN || tile2 == Tile.TUBE_LEFT);
 
-            if (! player.isJumping && onTheGround) {
+            if (! player.isJumping && onTheGround && ! player.abilities.contains(Ability.SLICK)) {
 //                Sounds.get().play(Sounds.JUMP);
                 player.vy -= player.gravityDirection * Player.JUMPING;
                 player.isJumping = true;

@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Class-Path: gdx.jar gdx-backend-lwjgl.jar gdx-backend-lwjgl-natives.ja
+ r gdx-natives.jar
+Main-Class: ua.org.dector.ludumdare.ld24.App
+

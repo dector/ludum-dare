@@ -118,5 +118,5 @@ enum Ability {
 }
 
 enum State {
-    DIE, SWIM, RUNNING, GAS
+    DIE, SWIM, RUNNING
 }

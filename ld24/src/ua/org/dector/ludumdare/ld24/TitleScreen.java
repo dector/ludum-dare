@@ -1,6 +1,7 @@
 package ua.org.dector.ludumdare.ld24;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
@@ -56,7 +57,12 @@ public class TitleScreen implements Screen, InputProcessor {
     }
 
     public boolean keyDown(int keycode) {
-        game.setScreen(new GameScreen());
+        Sounds.get().play(Sounds.SELECT);
+        
+        if (keycode == Input.Keys.ESCAPE)
+            Gdx.app.exit();
+        else
+            game.setScreen(new GameScreen());
         
         return true;
     }

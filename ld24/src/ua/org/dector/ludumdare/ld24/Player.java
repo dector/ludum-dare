@@ -11,7 +11,7 @@ import java.util.Map;
 public class Player {
     public static final float RUNNING = 3.5f * Renderer.MULT;
     public static final float SWIMMING = 3.5f * Renderer.MULT;
-    public static final float JUMPING = 3.655f * Renderer.MULT;
+    public static final float JUMPING = 3.75f * Renderer.MULT;
     public static final float GRAVITY = 0.8f * Renderer.MULT;
 
     public static final float FRICTION = 0.8f;
@@ -54,11 +54,11 @@ public class Player {
 
         if (gravityAffection) {
             if (state == State.RUNNING)
-                ay += gravityDirection * GRAVITY;
+                ay += gravityDirection * GRAVITY * dt;
             else
-                ay += gravityDirection * GRAVITY / 10;
+                ay += gravityDirection * GRAVITY / 10 * dt;
         }
-        vy += ay * dt;
+        vy += ay;
 
         if (state == State.SWIM) {
             vx *= WATER_FRICTION;

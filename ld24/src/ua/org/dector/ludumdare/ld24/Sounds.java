@@ -13,7 +13,7 @@ public class Sounds {
     public static final String POWER_UP = "ld24/data/PowerUp.wav";
     public static final String CRASH    = "ld24/data/Crash.wav";
     public static final String SELECT   = "ld24/data/Select.wav";
-//    public static final String JUMP     = "ld24/data/Jump.wav";
+    public static final String WHEEP    = "ld24/data/Wheep.wav";
     public static final String HIT      = "ld24/data/Hit.wav";
     public static final String WIN      = "ld24/data/Win.wav";
 

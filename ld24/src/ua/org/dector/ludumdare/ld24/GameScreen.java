@@ -27,7 +27,7 @@ public class GameScreen implements Screen, InputProcessor {
         level.load(Levelset.getLevel());
         
         renderer = new Renderer(level);
-        
+
         Gdx.input.setInputProcessor(this);
     }
 

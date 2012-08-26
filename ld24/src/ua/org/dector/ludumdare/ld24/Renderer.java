@@ -54,7 +54,17 @@ public class Renderer {
     public static final int REACHED_AB_SPACE = REACHED_AB_WIDTH / 2;
     public static final int REACHED_AB_BOTTOM_PAD = REACHED_AB_HEIGHT / 2;
 
+    public static final int BACK_WIDTH  = CAM_WIDTH + 100;
+    public static final int BACK_HEIGHT = CAM_HEIGHT + 100;
+
+    public static final int SIGN_WIDTH = Renderer.CAM_WIDTH / 2;
+    public static final int SIGN_HEIGHT = Renderer.CAM_HEIGHT / 2;
+    
     public static final String GRAPHICS_FILE = "ld24/data/graphics.png";
+    public static final String SIGNS_FILE   = "ld24/data/signs.png";
+
+    public static final int LEVEL_COMPLETED = 0;
+    public static final int GAME_COMPLETED = 1;
 
     Level level;
 
@@ -78,7 +88,13 @@ public class Renderer {
     TextureRegion[] soundTex;
     TextureRegion[] reachedAbilTex;
 
+    TextureRegion[] winSignsTex;
+    
     TextureRegion levelTex;
+    
+    TextureRegion backTex;
+    float backC1 = 0;
+    float backC2 = 0;
 
     public Renderer(Level level) {
         this.level = level;
@@ -86,8 +102,11 @@ public class Renderer {
         sb = new SpriteBatch();
         uiSb = new SpriteBatch();
         font = new BitmapFont();
+        
+        level.renderer = this;
 
         loadResources();
+        loadBackTex();
         createMap();
 
         setupCamera();
@@ -200,6 +219,11 @@ public class Renderer {
         reachedAbilTex[REACHED_AB_GAS] = textureRegions[5][0];
         reachedAbilTex[REACHED_AB_SLICK] = textureRegions[5][1];
         reachedAbilTex[REACHED_AB_SWIM] = textureRegions[5][2];
+        
+        TextureRegion[][] winSigns = TextureRegion.split(new Texture(Gdx.files.internal(SIGNS_FILE)), SIGN_WIDTH, SIGN_HEIGHT);
+        winSignsTex = new TextureRegion[2];
+        winSignsTex[LEVEL_COMPLETED] = winSigns[0][0];
+        winSignsTex[GAME_COMPLETED] = winSigns[1][0];
     }
 
     public void render(float dt) {
@@ -211,6 +235,14 @@ public class Renderer {
         cam.position.lerp(new Vector3(level.player.x, level.player.y, 0), 2 * dt);
         cam.update();
         sb.setProjectionMatrix(cam.combined);
+        
+        uiSb.begin();
+        uiSb.draw(backTex,
+                - (cam.position.x * backC1),
+                - (cam.position.y * backC2)
+        );
+        uiSb.end();
+        
         sb.begin();
 
         // Render level
@@ -229,16 +261,15 @@ public class Renderer {
 
         uiSb.begin();
         if (level.player.win) {
+            TextureRegion tWin;
+            
             if (Levelset.isLast()) {
-                String wonStr = "You won!";
-                BitmapFont.TextBounds bounds = font.getBounds(wonStr);
-                font.draw(uiSb, wonStr,
-                        (App.SCREEN_WIDTH - bounds.width) / 2,
-                        (App.SCREEN_HEIGHT - bounds.height) / 2
-                );
+                tWin = winSignsTex[GAME_COMPLETED];
             } else {
-                // Draw "press Space to play next level"
+                tWin = winSignsTex[LEVEL_COMPLETED];
             }
+            
+            uiSb.draw(tWin, (CAM_WIDTH - SIGN_WIDTH) / 2, (CAM_HEIGHT - SIGN_HEIGHT) / 2);
         }
 
         if (Debug.DEBUG) {
@@ -362,5 +393,13 @@ public class Renderer {
 
     public void restart() {
         level.restart();
+    }
+
+    public void loadBackTex() {
+        Texture tex = new Texture(Gdx.files.internal(Levelset.getBack()));
+        backTex = new TextureRegion(tex, BACK_WIDTH, BACK_HEIGHT);
+
+        backC1 = (float)(BACK_WIDTH - CAM_WIDTH) / (level.width * (BLOCK_SIZE - 1));
+        backC2 = (float)(BACK_HEIGHT - CAM_HEIGHT) / (level.height * (BLOCK_SIZE - 1));
     }
 }

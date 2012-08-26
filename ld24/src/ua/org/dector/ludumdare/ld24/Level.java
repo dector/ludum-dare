@@ -39,7 +39,9 @@ public class Level {
     int waterCount;
 
     boolean paused = false;
-    
+
+    Renderer renderer;
+
     int spawnX;
     int spawnY;
     
@@ -276,6 +278,7 @@ public class Level {
                                             player.x = otherTube.x * BLOCK_SIZE;
                                             player.y = otherTube.y * BLOCK_SIZE + BLOCK_SIZE + 1;
                                             player.abilities.remove(Ability.LIQUID);
+                                            Sounds.get().play(Sounds.WHEEP);
                                         }
                                     } break;
                                     case TUBE_RIGHT: {
@@ -284,6 +287,7 @@ public class Level {
                                             player.x = otherTube.x * BLOCK_SIZE + BLOCK_SIZE + 1;
                                             player.y = otherTube.y * BLOCK_SIZE;
                                             player.abilities.remove(Ability.LIQUID);
+                                            Sounds.get().play(Sounds.WHEEP);
                                         }
                                     } break;
                                     case TUBE_DOWN: {
@@ -292,6 +296,7 @@ public class Level {
                                             player.x = otherTube.x * BLOCK_SIZE;
                                             player.y = otherTube.y * BLOCK_SIZE - BLOCK_SIZE - 1;
                                             player.abilities.remove(Ability.LIQUID);
+                                            Sounds.get().play(Sounds.WHEEP);
                                         }
                                     } break;
                                     case TUBE_LEFT: {
@@ -300,6 +305,7 @@ public class Level {
                                             player.x = otherTube.x * BLOCK_SIZE - BLOCK_SIZE - 1;
                                             player.y = otherTube.y * BLOCK_SIZE;
                                             player.abilities.remove(Ability.LIQUID);
+                                            Sounds.get().play(Sounds.WHEEP);
                                         }
                                     } break;
                                 }
@@ -382,6 +388,7 @@ public class Level {
     void restart() {
         Sounds.get().play(Sounds.HIT);
         load(Levelset.getLevel());
+        renderer.loadBackTex();
         collidedCount = 0;
         waterCount = 0;
         wasCollided = false;

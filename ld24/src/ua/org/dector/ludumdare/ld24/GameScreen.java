@@ -109,7 +109,7 @@ public class GameScreen implements Screen, InputProcessor {
                 }
             } break;
             case Keys.F2: {
-                Debug.DEBUG = ! Debug.DEBUG;
+//                Debug.DEBUG = ! Debug.DEBUG;
             } break;
             case Keys.NUM_1: if (Debug.DEBUG) level.getAbility(Ability.SWIM); break;
             case Keys.NUM_2: if (Debug.DEBUG) level.getAbility(Ability.GAS); break;

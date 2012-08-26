@@ -95,6 +95,7 @@ public class Renderer {
     TextureRegion backTex;
     float backC1 = 0;
     float backC2 = 0;
+    TextureRegion infoTex;
 
     public Renderer(Level level) {
         this.level = level;
@@ -106,7 +107,7 @@ public class Renderer {
         level.renderer = this;
 
         loadResources();
-        loadBackTex();
+        loadLevelTexs();
         createMap();
 
         setupCamera();
@@ -227,7 +228,7 @@ public class Renderer {
     }
 
     public void render(float dt) {
-        if (! level.player.win && ! level.paused)
+        if (! level.player.win && ! level.paused && ! level.started)
             level.update(dt);
         
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
@@ -300,6 +301,10 @@ public class Renderer {
         if (level.paused) {
             uiSb.draw(darkTex, 0, 0, CAM_WIDTH, CAM_HEIGHT);
             uiSb.draw(pauseTex, (CAM_WIDTH - PAUSE_WIDTH) / 2, (CAM_HEIGHT - PAUSE_HEIGHT) / 2, PAUSE_WIDTH, PAUSE_HEIGHT);
+        }
+        
+        if (level.started && ! level.player.win) {
+            uiSb.draw(infoTex, (CAM_WIDTH - SIGN_WIDTH) / 2, (CAM_HEIGHT - SIGN_HEIGHT) / 2);
         }
 
         uiSb.end();
@@ -395,11 +400,25 @@ public class Renderer {
         level.restart();
     }
 
-    public void loadBackTex() {
+    public void loadLevelTexs() {
+        if (backTex != null) backTex.getTexture().dispose();
+        
         Texture tex = new Texture(Gdx.files.internal(Levelset.getBack()));
         backTex = new TextureRegion(tex, BACK_WIDTH, BACK_HEIGHT);
 
         backC1 = (float)(BACK_WIDTH - CAM_WIDTH) / (level.width * (BLOCK_SIZE - 1));
         backC2 = (float)(BACK_HEIGHT - CAM_HEIGHT) / (level.height * (BLOCK_SIZE - 1));
+        
+        if (infoTex != null) infoTex.getTexture().dispose();
+        
+        Pixmap ip = new Pixmap(Gdx.files.internal(Levelset.getInfo()));
+        Texture iTex = new Texture(
+                Utils.toPowerOfTwo(ip.getWidth()),
+                Utils.toPowerOfTwo(ip.getHeight()),
+                Pixmap.Format.RGBA8888
+        );
+        iTex.draw(ip, 0, 0);
+        infoTex = new TextureRegion(iTex, SIGN_WIDTH, SIGN_HEIGHT);
+        ip.dispose();
     }
 }

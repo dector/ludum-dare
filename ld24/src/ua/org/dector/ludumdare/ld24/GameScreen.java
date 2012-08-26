@@ -25,6 +25,7 @@ public class GameScreen implements Screen, InputProcessor {
     public void show() {
         level = new Level();
         level.load(Levelset.getLevel());
+        level.started = true;
         
         renderer = new Renderer(level);
 
@@ -101,7 +102,10 @@ public class GameScreen implements Screen, InputProcessor {
                         Levelset.restart();
                     }
 
+                    level.started = true;
                     level.restart();
+                } else if (level.started) {
+                    level.started = false;
                 }
             } break;
             case Keys.F2: {

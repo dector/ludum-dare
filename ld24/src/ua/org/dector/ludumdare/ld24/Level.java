@@ -5,8 +5,6 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Rectangle;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import static ua.org.dector.ludumdare.ld24.Renderer.BLOCK_SIZE;
@@ -44,7 +42,9 @@ public class Level {
 
     int spawnX;
     int spawnY;
-    
+
+    boolean started;
+
     Player player;
     Map<Point, Point> tubes;
     
@@ -388,7 +388,7 @@ public class Level {
     void restart() {
         Sounds.get().play(Sounds.HIT);
         load(Levelset.getLevel());
-        renderer.loadBackTex();
+        renderer.loadLevelTexs();
         collidedCount = 0;
         waterCount = 0;
         wasCollided = false;

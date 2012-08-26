@@ -114,7 +114,7 @@ enum Direction {
 }
 
 enum Ability {
-    SWIM, SLICK, SOLID, LIQUID
+    SWIM, SLICK, SOLID, LIQUID, GAS
 }
 
 enum State {

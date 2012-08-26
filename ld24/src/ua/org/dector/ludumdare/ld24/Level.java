@@ -46,11 +46,7 @@ public class Level {
     Player player;
     Map<Point, Point> tubes;
     
-    String filename;
-
     public void load(String file) {
-        this.filename = file;
-        
         tubes = new HashMap<Point, Point>();
 
         Map<Integer, Point> unpairedTubes = new HashMap<Integer, Point>();
@@ -200,10 +196,14 @@ public class Level {
             if (player.isJumping && player.vy * player.gravityDirection > 0)
                 player.isJumping = false;
 
-            if (player.gravityDirection > 0 && player.vy > 0 && ! player.abilities.contains(Ability.SLICK)) {
-                player.gravityDirection = -1;
-                wasCollided = true;
-                collidedCount = 50;
+            if (player.gravityDirection > 0 && player.vy > 0) {
+                if (! player.abilities.contains(Ability.SLICK)) {
+                    player.gravityDirection = -1;
+                    wasCollided = true;
+                    collidedCount = 50;
+                } 
+                
+                player.abilities.remove(Ability.GAS);
             }
 
             player.vy = 0;
@@ -312,6 +312,7 @@ public class Level {
                     } break;
                     case AB_GAS: {
                         player.gravityDirection = 1;
+                        player.abilities.add(Ability.GAS);
                         removeTile(x[i], y[i]);
                         Sounds.get().play(Sounds.POWER_UP);
                     } break;
@@ -380,7 +381,7 @@ public class Level {
 
     void restart() {
         Sounds.get().play(Sounds.HIT);
-        load(filename);
+        load(Levelset.getLevel());
         collidedCount = 0;
         waterCount = 0;
         wasCollided = false;

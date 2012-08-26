@@ -29,13 +29,30 @@ public class Renderer {
     static final int PLAYER_RIGHT = 0;
     static final int PLAYER_LEFT = 1;
     
-    public static final int PAUSE_WIDTH = CAM_WIDTH / 5;
-    public static final int PAUSE_HEIGHT = CAM_HEIGHT / 5;
+    public static final int PAUSE_WIDTH     = CAM_WIDTH / 5;
+    public static final int PAUSE_HEIGHT    = CAM_HEIGHT / 5;
+    public static final int SOUND_WIDTH     = (int)(BLOCK_SIZE * 1.5);
+    public static final int SOUND_HEIGHT    = (int)(BLOCK_SIZE * 1.5);
     
+    public static final int SOUND_ON = 0;
+    public static final int SOUND_OFF = 1;
+
     public static final int TUBE_UP = 0;
     public static final int TUBE_RIGHT = 1;
     public static final int TUBE_DOWN = 2;
     public static final int TUBE_LEFT = 3;
+
+    public static final int REACHED_AB_RUN = 0;
+    public static final int REACHED_AB_SOLID = 1;
+    public static final int REACHED_AB_LIQUID = 2;
+    public static final int REACHED_AB_GAS = 3;
+    public static final int REACHED_AB_SLICK = 4;
+    public static final int REACHED_AB_SWIM = 5;
+
+    public static final int REACHED_AB_WIDTH = BLOCK_SIZE * 2;
+    public static final int REACHED_AB_HEIGHT = BLOCK_SIZE * 2;
+    public static final int REACHED_AB_SPACE = REACHED_AB_WIDTH / 2;
+    public static final int REACHED_AB_BOTTOM_PAD = REACHED_AB_HEIGHT / 2;
 
     public static final String GRAPHICS_FILE = "ld24/data/graphics.png";
 
@@ -57,6 +74,9 @@ public class Renderer {
 
     TextureRegion pauseTex;
     TextureRegion darkTex;
+    
+    TextureRegion[] soundTex;
+    TextureRegion[] reachedAbilTex;
 
     TextureRegion levelTex;
 
@@ -168,6 +188,18 @@ public class Renderer {
         darkP.dispose();
         
         pauseTex = textureRegions[4][1];
+
+        soundTex = new TextureRegion[2];
+        soundTex[SOUND_ON] = textureRegions[6][0];
+        soundTex[SOUND_OFF] = textureRegions[6][1];
+
+        reachedAbilTex = new TextureRegion[6];
+        reachedAbilTex[REACHED_AB_RUN] = textureRegions[4][0];
+        reachedAbilTex[REACHED_AB_SOLID] = textureRegions[4][2];
+        reachedAbilTex[REACHED_AB_LIQUID] = textureRegions[4][3];
+        reachedAbilTex[REACHED_AB_GAS] = textureRegions[5][0];
+        reachedAbilTex[REACHED_AB_SLICK] = textureRegions[5][1];
+        reachedAbilTex[REACHED_AB_SWIM] = textureRegions[5][2];
     }
 
     public void render(float dt) {
@@ -197,14 +229,18 @@ public class Renderer {
 
         uiSb.begin();
         if (level.player.win) {
-            String wonStr = "You won!";
-            BitmapFont.TextBounds bounds = font.getBounds(wonStr);
-            font.draw(uiSb, wonStr,
-                    (App.SCREEN_WIDTH - bounds.width) / 2,
-                    (App.SCREEN_HEIGHT - bounds.height) / 2
-            );
+            if (Levelset.isLast()) {
+                String wonStr = "You won!";
+                BitmapFont.TextBounds bounds = font.getBounds(wonStr);
+                font.draw(uiSb, wonStr,
+                        (App.SCREEN_WIDTH - bounds.width) / 2,
+                        (App.SCREEN_HEIGHT - bounds.height) / 2
+                );
+            } else {
+                // Draw "press Space to play next level"
+            }
         }
-        
+
         if (Debug.DEBUG) {
             String debugInfo = String.format(
                     "Player: %.0f:%.0f\nVx: %.2f\nVy: %.2f\nAx: %.2f\nAy: %.2f\nState: %s\nAbilities: %s",
@@ -220,12 +256,51 @@ public class Renderer {
             font.drawMultiLine(uiSb, debugInfo, 10, App.SCREEN_HEIGHT - 10);
         }
         
+        uiSb.draw(
+                ((Sounds.get().mutedOff) ? soundTex[SOUND_ON] : soundTex[SOUND_OFF]),
+                App.SCREEN_WIDTH - 2 * SOUND_WIDTH,
+                App.SCREEN_HEIGHT - 2 * SOUND_HEIGHT,
+                SOUND_WIDTH,
+                SOUND_HEIGHT
+        );
+
+        drawReachedAbilities();
+        
         if (level.paused) {
             uiSb.draw(darkTex, 0, 0, CAM_WIDTH, CAM_HEIGHT);
             uiSb.draw(pauseTex, (CAM_WIDTH - PAUSE_WIDTH) / 2, (CAM_HEIGHT - PAUSE_HEIGHT) / 2, PAUSE_WIDTH, PAUSE_HEIGHT);
         }
 
         uiSb.end();
+    }
+
+    private void drawReachedAbilities() {
+        int abils = level.player.abilities.size() + 1;
+        int sumWidth = abils * (REACHED_AB_WIDTH + REACHED_AB_SPACE) - REACHED_AB_SPACE; 
+
+        int x = (CAM_WIDTH - sumWidth) / 2;
+        int y = REACHED_AB_BOTTOM_PAD;
+
+        if (level.player.state == State.RUNNING)
+            uiSb.draw(reachedAbilTex[REACHED_AB_RUN], x, y, REACHED_AB_WIDTH, REACHED_AB_HEIGHT);
+//        else if (level.player.state == State.SWIM)
+//            uiSb.draw(reachedAbilTex[REACHED_AB_SWIM], x, y, REACHED_AB_WIDTH, REACHED_AB_HEIGHT);
+
+        x += REACHED_AB_WIDTH + REACHED_AB_SPACE;
+
+        TextureRegion t = null;
+        for (Ability ab : level.player.abilities) {
+            switch (ab) {
+                case SWIM: t = reachedAbilTex[REACHED_AB_SWIM];  break;
+                case SLICK: t = reachedAbilTex[REACHED_AB_SLICK]; break;
+                case SOLID: t = reachedAbilTex[REACHED_AB_SOLID]; break;
+                case GAS: t = reachedAbilTex[REACHED_AB_GAS]; break;
+                case LIQUID: t = reachedAbilTex[REACHED_AB_LIQUID]; break;
+            }
+
+            uiSb.draw(t, x, y, REACHED_AB_WIDTH, REACHED_AB_HEIGHT);
+            x += REACHED_AB_WIDTH + REACHED_AB_SPACE;
+        }
     }
 
     private void renderLevel() {

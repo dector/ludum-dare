@@ -10,8 +10,6 @@ import static com.badlogic.gdx.Input.*;
  * @author dector
  */
 public class GameScreen implements Screen, InputProcessor {
-    public static final String LEVEL_FILE = "ld24/data/level3.png";
-    
     Level level;
     Renderer renderer;
     
@@ -26,7 +24,7 @@ public class GameScreen implements Screen, InputProcessor {
 
     public void show() {
         level = new Level();
-        level.load(LEVEL_FILE);
+        level.load(Levelset.getLevel());
         
         renderer = new Renderer(level);
         
@@ -94,6 +92,20 @@ public class GameScreen implements Screen, InputProcessor {
             } break;
             case Keys.M: {
                 Sounds.get().mutedOff = ! Sounds.get().mutedOff;
+            } break;
+            case Keys.SPACE: {
+                if (level.player.win || Debug.DEBUG) {
+                    if (! Levelset.isLast()) {
+                        level.load(Levelset.next());
+                    } else {
+                        Levelset.restart();
+                    }
+
+                    level.restart();
+                }
+            } break;
+            case Keys.F2: {
+                Debug.DEBUG = ! Debug.DEBUG;
             } break;
         }
         
